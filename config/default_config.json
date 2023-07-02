@@ -1,5 +1,12 @@
 {
     "paths": [
-        "C:\\"
+        "C:\\",
+		{
+			"path": "\\\\192.168.0.10\\c",
+			"type": "smb",
+			"domain": "WORKGROUP",
+			"username": "username",
+			"password": "xxxxword"
+		}
     ]
 }
