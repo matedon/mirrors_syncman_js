@@ -138,6 +138,7 @@ const createMainWindow = async () => {
 										'name': data[i],
 										'path': '',
 										'isDir': false
+										// TODO: smb file isDir
 									})
 								}
 								smb2Client.close()
@@ -158,7 +159,7 @@ const createMainWindow = async () => {
 			})
 		})
 		server.listen(PORT)
-		console.log("http://localhost:"+PORT)
+		console.log("http://localhost:" + PORT)
 	})
 
 	window_.on('closed', () => {
