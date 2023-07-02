@@ -29,28 +29,30 @@ $(window).on('load', function() {
         $th.closest('[data-files]').find('[data-files-path]').val(td.path).trigger('input')
     })
     $('body').on('input', '[data-files-path]', function () {
-        const $th = $(this)
-        const td = $th.data()
-        if (td.filesPathTime) {
-            clearTimeout(td.filesPathTime)
+        const $dfp = $(this)
+        const ddfp = $dfp.data()
+        if (ddfp.filesPathTime) {
+            clearTimeout(ddfp.filesPathTime)
         }
-        td.filesPathTime = setTimeout(function() {
-            if (td.$filesPathReq != null) {
-                td.$filesPathReq.abort()
-                td.$filesPathReq = null
+        ddfp.filesPathTime = setTimeout(function() {
+            if (ddfp.$filesPathReq != null) {
+                ddfp.$filesPathReq.abort()
+                ddfp.$filesPathReq = null
             }
-            td.$filesPathReq = $.ajax({
-                'url': 'http://localhost:8089/' + td.type,
+            ddfp.$filesPathReq = $.ajax({
+                'url': 'http://localhost:8089/' + ddfp.type,
 				'type': 'POST',
                 'dataType': 'json',
-                'data': td,
+                'data': $.extend({}, ddfp, {
+					'open': $dfp.val()
+				}, true),
                 'success': function (res) {
                     console.log(res)
 					if (res.problem) {
 						alert(res.problem)
 						return false
 					}
-                    const $fls = $th.closest('[data-files]')
+                    const $fls = $dfp.closest('[data-files]')
                     const $frc = $fls.find('[data-files-row-clone]')
                     const $frs = $fls.find('[data-files-rows]')
                     $fls.find('[data-files-row]').filter(function () {

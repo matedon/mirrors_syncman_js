@@ -88,17 +88,22 @@ const createMainWindow = async () => {
 						res.end(JSON.stringify(config))
 						break
 					case '/files':
-						if (paramObject.path == undefined) {
+						if (paramObject.open == undefined) {
 							console.error('ERROR! There is no path!')
 							break
 						}
-						fs.readdir(paramObject.path, async function (err, readFiles) {
+						resFiles.push({
+							'name': '..',
+							'path': path.join(paramObject.open, '..'),
+							'isDir': true
+						})
+						fs.readdir(paramObject.open, async function (err, readFiles) {
 							if (err) {
 								problem = 'Unable to scan directory: ' + err
 								console.log(problem)
 							} else {
 								readFiles.forEach(function (fileName) {
-									const filePath = path.join(paramObject.path, fileName)
+									const filePath = path.join(paramObject.open, fileName)
 									resFiles.push({
 										'name': fileName,
 										'path': filePath,
@@ -114,7 +119,7 @@ const createMainWindow = async () => {
 						break
 					case '/smb':
 						const smb2Client = new SMB2({
-							share: paramObject.path,
+							share: paramObject.open,
 							domain: paramObject.domain,
 							username: paramObject.username,
 							password: paramObject.password,
