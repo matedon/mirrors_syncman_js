@@ -1,18 +1,39 @@
-<!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Electron boilerplate</title>
-		<link rel="stylesheet" href="index.css">
-	</head>
-	<body>
-		<div class="container">
-			<header>
-				<h1>Electron boilerplate</h1>
-				<p></p>
-			</header>
-			<section class="main"></section>
-			<footer></footer>
-		</div>
-	</body>
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MirrorSyncMan.js</title>
+    <link rel="stylesheet" href="static/bootstrap.min.css">
+    <link rel="stylesheet" href="static/font-awesome-4.7.0\css\font-awesome.min.css">
+    <link rel="stylesheet" href="static/index.css">
+</head>
+<body>
+    <main class="container mt-4">
+        <div class="row" data-files-container>
+            <div class="col" data-files>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">
+                        <i class="fa fa-lg fa-fw fa-folder-open-o"></i>
+                    </span>
+                    <input type="text" class="form-control" data-files-path value="m:\mirror_alpha\">
+                </div>
+                <table class="table table-striped" data-files-rows>
+                    <tbody>
+                        <tr data-files-row data-files-row-clone>
+                            <td data-files-row-name></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <footer>
+            mirrorSyncman.js
+        </footer>
+    </main>
+
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <script src="static/bootstrap.bundle.min.js"></script>
+    <script src="static/jquery.mirrors-syncman.js"></script>
+</body>
 </html>

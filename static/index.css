@@ -1,0 +1,6 @@
+[data-files-row] {
+    cursor: pointer;
+}
+[data-files-row]:hover td {
+    background-color: #bada55;
+}

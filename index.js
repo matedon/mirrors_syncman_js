@@ -1,17 +1,37 @@
 'use strict';
-const path = require('path');
-const {app, BrowserWindow, Menu} = require('electron');
-/// const {autoUpdater} = require('electron-updater');
-const {is} = require('electron-util');
-const unhandled = require('electron-unhandled');
-const debug = require('electron-debug');
-const contextMenu = require('electron-context-menu');
-const config = require('./config.js');
-const menu = require('./menu.js');
+const path = require('path')
+const {app, BrowserWindow, Menu, ipcMain} = require('electron')
+/// const {autoUpdater} = require('electron-updater')
+const {is} = require('electron-util')
+const unhandled = require('electron-unhandled')
+const debug = require('electron-debug')
+const contextMenu = require('electron-context-menu')
+const options = require('./options.js')
+const menu = require('./menu.js')
+const SMB2 = require('smb2')
+const fs = require('fs')
+const StringDecoder = require('string_decoder').StringDecoder
 
-unhandled();
-debug();
-contextMenu();
+let config = {}
+const readconfig = function () {
+	const dc = './config/default_config.json'
+	const cc = './config/config.json'
+	if (fs.existsSync(cc)) {
+		config = JSON.parse(fs.readFileSync(cc))
+		console.log(config)
+	} else {
+		fs.copyFile(dc, cc, (err) => {
+			if (err) throw err
+			console.log(cc + ' created now!')
+			readconfig()
+		})
+	}
+}
+readconfig()
+
+unhandled()
+debug()
+contextMenu()
 
 // Note: Must match `build.appId` in package.json
 app.setAppUserModelId('com.company.AppName');
@@ -30,61 +50,151 @@ app.setAppUserModelId('com.company.AppName');
 // Prevent window from being garbage collected
 let mainWindow;
 
+const PORT = 8089
+
 const createMainWindow = async () => {
 	const window_ = new BrowserWindow({
 		title: app.name,
 		show: false,
-		width: 600,
-		height: 400,
-	});
+		width: 1024,
+		height: 768,
+		webPreferences: {
+			nodeIntegration: true,
+			contextIsolation: false
+		}
+	})
 
 	window_.on('ready-to-show', () => {
-		window_.show();
-	});
+		window_.show()
+		window_.maximize()
+		let http = require("http")
+		let server = http.createServer(async function (req, res) {
+			console.log(req.url)
+			const decoder = new StringDecoder('utf-8')
+			let paramObject = {}
+			let payload = ''
+			req.on('data', (data) => {
+				payload += decoder.write(data)
+			})
+			req.on('end', () => {
+				payload += decoder.end()
+				const params = new URLSearchParams(payload)
+				paramObject = Object.fromEntries(params.entries())
+				let problem = false
+				const resFiles = []
+				console.log(paramObject)
+				switch (req.url) {
+					case '/config':
+						res.end(JSON.stringify(config))
+						break
+					case '/list':
+						if (paramObject.path == undefined) {
+							console.error('ERROR! There is no path!')
+							break
+						}
+						fs.readdir(paramObject.path, async function (err, readFiles) {
+							if (err) {
+								problem = 'Unable to scan directory: ' + err
+								console.log(problem)
+							} else {
+								readFiles.forEach(function (fileName) {
+									const filePath = path.join(paramObject.path, fileName)
+									resFiles.push({
+										'name': fileName,
+										'path': filePath,
+										'isDir': fs.lstatSync(filePath)
+									})
+								})
+							}
+							res.end(JSON.stringify({
+								'problem': problem,
+								'files': resFiles
+							}))
+						})
+						break
+					case '/smb':
+						const files = []
+						const smb2Client = new SMB2({share: "\\\\192.168.0.30\\m",
+							domain: 'WORKGROUP',
+							username: 'computer',
+							password: 'Alma1a3d',
+							//debug: true,
+							autoCloseTimeout: 0
+						})
+						//smb2Client.readdir('Docos\\SMB_Test\\Adult', function(err, data){
+						smb2Client.readdir('', function(err, data) {
+							if (err) {
+								console.log("Error (readdir):\n", err)
+							} else {
+								console.log("Connection made.")
+								for (let i = 0; i < data.length; i++) {
+									files.push(data[i])
+									console.log(data[i])
+								}
+								smb2Client.close()
+							}
+							res.end(JSON.stringify({
+								'type': 'smb',
+								'files': files
+							}))
+						})
+						break
+					default:
+						res.end(JSON.stringify({
+							'addr': res.socket.remoteAddress,
+							'port': res.socket.remotePort
+						}))
+						break
+				}
+			})
+		})
+		server.listen(PORT)
+		console.log("http://localhost:"+PORT)
+	})
 
 	window_.on('closed', () => {
 		// Dereference the window
 		// For multiple windows store them in an array
-		mainWindow = undefined;
+		mainWindow = undefined
 	});
 
-	await window_.loadFile(path.join(__dirname, 'index.html'));
+	await window_.loadFile(path.join(__dirname, 'index.html'))
 
-	return window_;
+	return window_
 };
 
 // Prevent multiple instances of the app
 if (!app.requestSingleInstanceLock()) {
-	app.quit();
+	app.quit()
 }
 
 app.on('second-instance', () => {
 	if (mainWindow) {
 		if (mainWindow.isMinimized()) {
-			mainWindow.restore();
+			mainWindow.restore()
 		}
 
-		mainWindow.show();
+		mainWindow.show()
 	}
 });
 
 app.on('window-all-closed', () => {
 	if (!is.macos) {
-		app.quit();
+		app.quit()
 	}
 });
 
 app.on('activate', async () => {
 	if (!mainWindow) {
-		mainWindow = await createMainWindow();
+		mainWindow = await createMainWindow()
 	}
 });
 
 (async () => {
-	await app.whenReady();
-	Menu.setApplicationMenu(menu);
-	mainWindow = await createMainWindow();
+	await app.whenReady()
+	Menu.setApplicationMenu(menu)
+	mainWindow = await createMainWindow()
 
-	const favoriteAnimal = config.get('favoriteAnimal');
-	mainWindow.webContents.executeJavaScript(`document.querySelector('header p').textContent = 'Your favorite animal is ${favoriteAnimal}'`);
+	// const favoriteAnimal = options.get('favoriteAnimal')
+	// mainWindow.webContents.executeJavaScript(`document.querySelector('header p').textContent = 'Your favorite animal is ${favoriteAnimal}'`);
 })();

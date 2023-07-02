@@ -1,14 +1,14 @@
 {
-	"name": "app-name",
-	"productName": "App Name",
-	"version": "0.0.0",
-	"description": "The best app ever",
+	"name": "mirror-syncman",
+	"productName": "MirrorSyncMan.js",
+	"version": "0.0.1",
+	"description": "Multipanel file manager, main purpose to syncronize same content (mirrors)",
 	"license": "MIT",
-	"repository": "sindresorhus/electron-boilerplate",
+	"repository": "matedon/mirror-syncman-js",
 	"author": {
-		"name": "Your Name",
-		"email": "user@gmail.com",
-		"url": "https://sindresorhus.com"
+		"name": "Kotroczó Máté",
+		"email": "matedon@gmail.com",
+		"url": "https://matedon.com"
 	},
 	"scripts": {
 		"postinstall": "electron-builder install-app-deps",
@@ -20,18 +20,24 @@
 		"release": "np"
 	},
 	"dependencies": {
+		"body-parser": "^1.20.2",
+		"crypto": "^1.0.1",
 		"electron-context-menu": "^3.4.0",
 		"electron-debug": "^3.2.0",
 		"electron-store": "^8.1.0",
 		"electron-unhandled": "^4.0.1",
 		"electron-updater": "^5.2.1",
-		"electron-util": "^0.17.2"
+		"electron-util": "^0.17.2",
+		"http": "^0.0.1-security",
+		"jquery": "^3.7.0",
+		"smb2": "^0.2.11",
+		"string_decoder": "^1.3.0"
 	},
 	"devDependencies": {
-		"electron": "^13.0.0",
+		"electron": "^25.2.0",
 		"electron-builder": "^23.3.3",
-		"np": "^7.6.2",
-		"xo": "^0.51.0"
+		"np": "^8.0.4",
+		"xo": "^0.27.2"
 	},
 	"xo": {
 		"envs": [
