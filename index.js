@@ -87,7 +87,7 @@ const createMainWindow = async () => {
 					case '/config':
 						res.end(JSON.stringify(config))
 						break
-					case '/list':
+					case '/files':
 						if (paramObject.path == undefined) {
 							console.error('ERROR! There is no path!')
 							break
@@ -113,29 +113,33 @@ const createMainWindow = async () => {
 						})
 						break
 					case '/smb':
-						const files = []
-						const smb2Client = new SMB2({share: "\\\\192.168.0.30\\m",
-							domain: 'WORKGROUP',
-							username: 'computer',
-							password: 'Alma1a3d',
+						const smb2Client = new SMB2({
+							share: paramObject.path,
+							domain: paramObject.domain,
+							username: paramObject.username,
+							password: paramObject.password,
 							//debug: true,
 							autoCloseTimeout: 0
 						})
-						//smb2Client.readdir('Docos\\SMB_Test\\Adult', function(err, data){
-						smb2Client.readdir('', function(err, data) {
+						const subdir = paramObject.subdir ? paramObject.subdir : ''
+						smb2Client.readdir(subdir, function(err, data) {
 							if (err) {
 								console.log("Error (readdir):\n", err)
 							} else {
 								console.log("Connection made.")
 								for (let i = 0; i < data.length; i++) {
-									files.push(data[i])
 									console.log(data[i])
+									resFiles.push({
+										'name': data[i],
+										'path': '',
+										'isDir': false
+									})
 								}
 								smb2Client.close()
 							}
 							res.end(JSON.stringify({
 								'type': 'smb',
-								'files': files
+								'files': resFiles
 							}))
 						})
 						break

@@ -11,14 +11,15 @@ $(window).on('load', function() {
             console.log(res)
             $.each(res.paths, function (i, obj) {
                 console.log(obj)
-				let path = ''
+				let data = {}
 				if (typeof obj == 'string') {
-					path = obj
-				} else if (obj.path) {
-					path = obj.path
+					data.path = obj
+					data.type = 'files'
+				} else if (typeof obj == 'object' && obj.path) {
+					data = obj
 				}
                 $fls.clone(true, true).show().appendTo($flc)
-                .find('[data-files-path]').val(path).trigger('input')
+                .find('[data-files-path]').val(data.path).data(data).trigger('input')
             })
         }
     })
@@ -39,13 +40,10 @@ $(window).on('load', function() {
                 td.$filesPathReq = null
             }
             td.$filesPathReq = $.ajax({
-                'url': 'http://localhost:8089/list',
+                'url': 'http://localhost:8089/' + td.type,
 				'type': 'POST',
                 'dataType': 'json',
-                'data': {
-                    'path': $th.val(),
-					'kutyam': 'majom'
-                },
+                'data': td,
                 'success': function (res) {
                     console.log(res)
 					if (res.problem) {
