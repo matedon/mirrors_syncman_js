@@ -8,7 +8,7 @@ const debug = require('electron-debug')
 const contextMenu = require('electron-context-menu')
 const options = require('./options.js')
 const menu = require('./menu.js')
-const SMB2 = require('smb2')
+const SMB2 = require('@marsaud/smb2')
 const fs = require('fs')
 const StringDecoder = require('string_decoder').StringDecoder
 
@@ -123,25 +123,21 @@ const createMainWindow = async () => {
 							domain: paramObject.domain,
 							username: paramObject.username,
 							password: paramObject.password,
-							//debug: true,
 							autoCloseTimeout: 0
 						})
 						const subdir = paramObject.subdir ? paramObject.subdir : ''
-						smb2Client.readdir(subdir, function(err, data) {
+						smb2Client.readdir(subdir, { stats: true }, function(err, data) {
 							if (err) {
 								console.log("Error (readdir):\n", err)
 							} else {
 								console.log("Connection made.")
 								for (let i = 0; i < data.length; i++) {
-									console.log(data[i])
 									resFiles.push({
-										'name': data[i],
+										'name': data[i].name,
 										'path': '',
-										'isDir': false
-										// TODO: smb file isDir
+										'isDir': data[i].isDirectory()
 									})
 								}
-								smb2Client.close()
 							}
 							res.end(JSON.stringify({
 								'type': 'smb',
