@@ -52,6 +52,38 @@ let mainWindow;
 
 const PORT = 8089
 
+const prepareResFiles = (files) => {
+	files.sort((a, b) => {
+		let fa = a.name.toLowerCase(),
+			fb = b.name.toLowerCase()
+
+		if (fa < fb) {
+			return -1
+		}
+		if (fa > fb) {
+			return 1
+		}
+		return 0
+	})
+	return files
+}
+
+function strDiff(a, b) {
+	let i = 0
+	let j = 0
+	let res = ''
+
+	while (j < b.length) {
+		if (a[i] != b[j] || i == a.length) {
+			res += b[j]
+		} else {
+			i++
+		}
+		j++
+	}
+	return res
+}
+
 const createMainWindow = async () => {
 	const window_ = new BrowserWindow({
 		title: app.name,
@@ -113,35 +145,42 @@ const createMainWindow = async () => {
 							}
 							res.end(JSON.stringify({
 								'problem': problem,
-								'files': resFiles
+								'files': prepareResFiles(resFiles)
 							}))
 						})
 						break
 					case '/smb':
 						const smb2Client = new SMB2({
-							share: paramObject.open,
+							share: paramObject.share,
 							domain: paramObject.domain,
 							username: paramObject.username,
 							password: paramObject.password,
 							autoCloseTimeout: 0
 						})
-						const subdir = paramObject.subdir ? paramObject.subdir : ''
+						let subdir = strDiff(paramObject.share, paramObject.open)
+						if (subdir[0] == '\\' || subdir[0] == '/') {
+							//Remove shashes if first character is "\" or "/"
+							subdir = subdir.slice(1)
+						}
+						console.log('strDiff', paramObject.share, paramObject.open, subdir)
 						smb2Client.readdir(subdir, { stats: true }, function(err, data) {
 							if (err) {
 								console.log("Error (readdir):\n", err)
 							} else {
 								console.log("Connection made.")
 								for (let i = 0; i < data.length; i++) {
+									//console.log(data[i])
+									const filePath = path.join(paramObject.open, data[i].name)
 									resFiles.push({
 										'name': data[i].name,
-										'path': '',
+										'path': filePath,
 										'isDir': data[i].isDirectory()
 									})
 								}
 							}
 							res.end(JSON.stringify({
 								'type': 'smb',
-								'files': resFiles
+								'files': prepareResFiles(resFiles)
 							}))
 						})
 						break

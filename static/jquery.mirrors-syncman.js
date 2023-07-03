@@ -15,8 +15,11 @@ $(window).on('load', function() {
 				if (typeof obj == 'string') {
 					data.path = obj
 					data.type = 'files'
-				} else if (typeof obj == 'object' && obj.path) {
+				} else if (typeof obj == 'object' && obj.type) {
 					data = obj
+					if (data.type == 'smb' && data.share) {
+						data.path = data.share + '\\' + data.open
+					}
 				}
                 $fls.clone(true, true).show().appendTo($flc)
                 .find('[data-files-path]').val(data.path).data(data).trigger('input')
