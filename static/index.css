@@ -7,3 +7,13 @@
 [data-files-row-clone] {
 	display: none;
 }
+tr.missing td {
+	color: red;
+}
+.numDisc {
+	display: inline-block;
+	width: 1.5rem;
+	text-align: center;
+	border-radius: 100px;
+	background-color: rgba(0, 0, 0, 0.15);
+}

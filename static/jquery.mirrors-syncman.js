@@ -24,6 +24,7 @@ const fnSortDir = function (files) {
 $(window).on('load', function() {
     const $flc = $('[data-files-container]')
     const $fls = $('[data-files]').hide()
+	let colNum = 0
 	const fnCloneRow = function ($fls, files, doClear) {
 		const $frc = $fls.find('[data-files-row-clone]')
 		const $frs = $fls.find('[data-files-rows]')
@@ -35,10 +36,16 @@ $(window).on('load', function() {
 		$.each(files, function (i, row) {
 			let name = row.isDir ? '[' + row.name + ']' : row.name
 			const $nrow = $frc.clone(true, true).removeAttr('data-files-row-clone')
-			.data(row).appendTo($frs)
-			.find('[data-files-row-name]').html(name)
+			$nrow.data(row).appendTo($frs)
+			$nrow.find('[data-files-row-name]').html(name)
 			if (row.missing) {
-				$nrow.addClass('text-danger')
+				$nrow.addClass('missing')
+			}
+			if (row.present) {
+				$pres = $nrow.find('[data-files-row-pres]')
+				$.each(row.present, function (i, num) {
+					$pres.append('<span class="numDisc">' + num + '</span>')
+				})
 			}
 		})
 	}
@@ -60,8 +67,10 @@ $(window).on('load', function() {
 						data.path = data.share + '\\' + data.open
 					}
 				}
-                $fls.clone(true, true).show().appendTo($flc)
-                .find('[data-files-path]').val(data.path).data(data).trigger('input')
+				data.num = colNum ++
+                $clone = $fls.clone(true, true).show().appendTo($flc).data(data)
+                $clone.find('[data-files-path]').val(data.path).trigger('input')
+				$clone.find('[data-files-num]').html(data.num)
             })
         }
     })
@@ -72,20 +81,21 @@ $(window).on('load', function() {
     })
     $('body').on('input', '[data-files-path]', function () {
         const $dfp = $(this)
-        const ddfp = $dfp.data()
-        if (ddfp.filesPathTime) {
-            clearTimeout(ddfp.filesPathTime)
+		const $df = $dfp.closest('[data-files]')
+        const dataCol = $df.data()
+        if (dataCol.filesPathTime) {
+            clearTimeout(dataCol.filesPathTime)
         }
-        ddfp.filesPathTime = setTimeout(function() {
-            if (ddfp.$filesPathReq != null) {
-                ddfp.$filesPathReq.abort()
-                ddfp.$filesPathReq = null
+        dataCol.filesPathTime = setTimeout(function() {
+            if (dataCol.$filesPathReq != null) {
+                dataCol.$filesPathReq.abort()
+                dataCol.$filesPathReq = null
             }
-            ddfp.$filesPathReq = $.ajax({
-                'url': 'http://localhost:8089/' + ddfp.type,
+            dataCol.$filesPathReq = $.ajax({
+                'url': 'http://localhost:8089/' + dataCol.type,
 				'type': 'POST',
                 'dataType': 'json',
-                'data': $.extend({}, ddfp, {
+                'data': $.extend({}, dataCol, {
 					'open': $dfp.val()
 				}, true),
                 'success': function (res) {
@@ -99,32 +109,69 @@ $(window).on('load', function() {
             })
         }, 300)
     })
+	const fnSyncList = function () {
+		const numFiles = []
+		const numLists = []
+		$('[data-files]').each(function () {
+			const $th = $(this)
+			const td = $th.data()
+			if (td.num == undefined) return this
+			numFiles[td.num] = $th
+			numLists[td.num] = []
+			$th.find('[data-files-row]').not('[data-files-row-clone]').each(function () {
+				numLists[td.num].push($(this).data())
+			})
+		})
+		$.each(numLists, function(num_a, list_a) {
+			//if (num_a > 1) return false
+			$.each(numLists, function(num_b, list_b) {
+				if (num_a == num_b) return true
+				// console.log(num_a, num_b)
+				// console.log(list_a, list_b)
+				const list_ab = []
+				$.each(list_a, function (i, row_a) {
+					//if (num_a == 1 && num_b == 2) return false
+					console.log(num_a, num_b)
+					const row_ac = $.extend({}, row_a, true)
+					const row_n = list_b.find(x => x.name === row_a.name)
+					if (row_n == undefined) {
+						row_ac.missing = true
+						if (row_ac.present == undefined) {
+							row_ac.present = []
+						}
+						row_ac.present.push(num_a)
+					} else if (row_ac.missing && row_ac.present.includes(num_b)) {
+						row_ac.present = jQuery.grep(row_ac.present, function(value) {
+							// Remove num_b from present array
+							return value != num_b
+						})
+						if (row_ac.present.length == 0) {
+							row_ac.missing = false
+						}
+					}
+					list_ab.push(row_ac)
+				})
+				$.each(list_b, function (i, row_b) {
+					//if (num_a == 1 && num_b == 2) return false
+					const row_bc = $.extend({}, row_b, true)
+					const row_n = list_a.find(x => x.name === row_b.name)
+					if (row_n == undefined) {
+						list_ab.push(row_bc)
+					}
+				})
+				if (list_ab.length) {
+					numLists[num_b] = list_ab
+				}
+			})
+		})
+		$.each(numLists, function(num, list) {
+			fnSortDir(list)
+			fnCloneRow(numFiles[num], list, true)
+		})
+	}
     $('body').on('click', '[data-files-sync]', function () {
-        const $df1 = $(this)
-		const $df = $df1.closest('[data-files]')
-		const $df2 = $df.next('[data-files]')
-		const list1 = []
-		const list2 = []
-		const list21 = []
-        $df.find('[data-files-row]').not('[data-files-row-clone]').each(function () {
-			list1.push($(this).data())
-		})
-		console.log(list1)
-		$df2.find('[data-files-row]').not('[data-files-row-clone]').each(function () {
-			list2.push($(this).data())
-		})
-		console.log(list2)
-		$.each(list1, function (i, row) {
-			const row2 = list2.find(x => x.name === row.name)
-			if (row2 == undefined) {
-				// console.log('missing from list2', row)
-				row.missing = true
-				// fnCloneRow($df2, [row])
-			}
-			list21.push(row)
-		})
-		fnSortDir(list21)
-		fnCloneRow($df2, list21, true)
+        $(this).toggleClass('btn-info').toggleClass('btn-light')
+		fnSyncList()
     })
 
 })

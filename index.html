@@ -14,10 +14,10 @@
             <div class="col" data-files>
                 <div class="input-group mb-3">
                     <span class="input-group-text">
-                        <i class="fa fa-lg fa-fw fa-folder-open-o"></i>
-                    </span>
+						<span data-files-num class="numDisc"></span>
+					</span>
                     <input type="text" class="form-control" data-files-path value="m:\mirror_alpha\">
-					<button class="input-group-text btn btn-secondary" data-files-sync>
+					<button class="input-group-text btn btn-info" data-files-sync>
                         <i class="fa fa-lg fa-fw fa-balance-scale"></i>
                     </button>
                 </div>
@@ -25,6 +25,12 @@
                     <tbody>
                         <tr data-files-row data-files-row-clone>
                             <td data-files-row-name></td>
+							<td data-files-row-pres></td>
+							<td>
+								<button data-files-row-action class="btn btn-sm btn-light">
+									A
+								</button>
+							</td>
                         </tr>
                     </tbody>
                 </table>
