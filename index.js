@@ -60,19 +60,19 @@ function fieldSorter(fields) {
                 var dir = 1
                 if (o[0] === '-') {
                    dir = -1
-                   o=o.substring(1)
+                   o = o.substring(1)
                 }
                 if (a[o] > b[o]) return dir
                 if (a[o] < b[o]) return -(dir)
                 return 0
             })
-            .reduce(function firstNonZeroValue (p,n) {
+            .reduce(function firstNonZeroValue (p, n) {
                 return p ? p : n
             }, 0)
     }
 }
 const prepareResFiles = (files) => {
-	return files.sort(fieldSorter(['-isDir', 'name']))
+	return files.sort(fieldSorter(['isJumper', '-isDir', 'name']))
 }
 
 
@@ -124,20 +124,27 @@ const createMainWindow = async () => {
 				let problem = false
 				const resFiles = []
 				console.log(paramObject)
+				if (['/files', '/smb'].includes(req.url)) {
+					if (paramObject.open == undefined) {
+						problem = 'ERROR! There is no path!'
+						console.error(problem)
+						res.end(JSON.stringify({
+							'problem': problem,
+							'files': prepareResFiles(resFiles)
+						}))
+					}
+					resFiles.push({
+						'name': '..',
+						'path': path.join(paramObject.open, '..'),
+						'isJumper': true,
+						'isDir': true
+					})
+				}
 				switch (req.url) {
 					case '/config':
 						res.end(JSON.stringify(config))
 						break
 					case '/files':
-						if (paramObject.open == undefined) {
-							console.error('ERROR! There is no path!')
-							break
-						}
-						resFiles.push({
-							'name': '..',
-							'path': path.join(paramObject.open, '..'),
-							'isDir': true
-						})
 						fs.readdir(paramObject.open, async function (err, readFiles) {
 							if (err) {
 								problem = 'Unable to scan directory: ' + err
@@ -171,7 +178,6 @@ const createMainWindow = async () => {
 							//Remove shashes if first character is "\" or "/"
 							subdir = subdir.slice(1)
 						}
-						console.log('strDiff', paramObject.share, paramObject.open, subdir)
 						smb2Client.readdir(subdir, { stats: true }, function(err, data) {
 							if (err) {
 								console.log("Error (readdir):\n", err)
