@@ -52,21 +52,30 @@ let mainWindow;
 
 const PORT = 8089
 
-const prepareResFiles = (files) => {
-	files.sort((a, b) => {
-		let fa = a.name.toLowerCase(),
-			fb = b.name.toLowerCase()
-
-		if (fa < fb) {
-			return -1
-		}
-		if (fa > fb) {
-			return 1
-		}
-		return 0
-	})
-	return files
+function fieldSorter(fields) {
+	// Source: https://stackoverflow.com/a/30446887/1516015
+    return function (a, b) {
+        return fields
+            .map(function (o) {
+                var dir = 1
+                if (o[0] === '-') {
+                   dir = -1
+                   o=o.substring(1)
+                }
+                if (a[o] > b[o]) return dir
+                if (a[o] < b[o]) return -(dir)
+                return 0
+            })
+            .reduce(function firstNonZeroValue (p,n) {
+                return p ? p : n
+            }, 0)
+    }
 }
+const prepareResFiles = (files) => {
+	return files.sort(fieldSorter(['-isDir', 'name']))
+}
+
+
 
 function strDiff(a, b) {
 	let i = 0
