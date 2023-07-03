@@ -4,3 +4,6 @@
 [data-files-row]:hover td {
     background-color: #bada55;
 }
+[data-files-row-clone] {
+	display: none;
+}
