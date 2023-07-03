@@ -112,6 +112,7 @@ $(window).on('load', function() {
 	const fnSyncList = function () {
 		const numFiles = []
 		const numLists = []
+		$('[data-files-row]').filter('.missing').remove()
 		$('[data-files]').each(function () {
 			const $th = $(this)
 			const td = $th.data()
@@ -123,15 +124,10 @@ $(window).on('load', function() {
 			})
 		})
 		$.each(numLists, function(num_a, list_a) {
-			//if (num_a > 1) return false
 			$.each(numLists, function(num_b, list_b) {
 				if (num_a == num_b) return true
-				// console.log(num_a, num_b)
-				// console.log(list_a, list_b)
 				const list_ab = []
 				$.each(list_a, function (i, row_a) {
-					//if (num_a == 1 && num_b == 2) return false
-					console.log(num_a, num_b)
 					const row_ac = $.extend({}, row_a, true)
 					const row_n = list_b.find(x => x.name === row_a.name)
 					if (row_n == undefined) {
@@ -139,7 +135,9 @@ $(window).on('load', function() {
 						if (row_ac.present == undefined) {
 							row_ac.present = []
 						}
-						row_ac.present.push(num_a)
+						if (row_ac.present.includes(num_a) == false) {
+							row_ac.present.push(num_a)
+						}
 					} else if (row_ac.missing && row_ac.present.includes(num_b)) {
 						row_ac.present = jQuery.grep(row_ac.present, function(value) {
 							// Remove num_b from present array
@@ -152,7 +150,6 @@ $(window).on('load', function() {
 					list_ab.push(row_ac)
 				})
 				$.each(list_b, function (i, row_b) {
-					//if (num_a == 1 && num_b == 2) return false
 					const row_bc = $.extend({}, row_b, true)
 					const row_n = list_a.find(x => x.name === row_b.name)
 					if (row_n == undefined) {
