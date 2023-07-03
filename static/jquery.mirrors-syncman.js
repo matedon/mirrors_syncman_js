@@ -79,6 +79,23 @@ $(window).on('load', function() {
         const td = $th.data()
         $th.closest('[data-files]').find('[data-files-path]').val(td.path).trigger('input')
     })
+	$('body').on('mouseover', '[data-files-row]', function () {
+		if ($('[data-navbar-btn-sync]').data().active() == false) {
+			return this
+		}
+        const $fr = $(this)
+        const dfr = $fr.data()
+		const $ff = $fr.closest('[data-files]')
+		const index = $ff.find('[data-files-row]').index($fr)
+		$('[data-files]').each(function () {
+			const $files = $(this)
+			const dfiles = $files.data()
+			if (dfiles.num == dfr.num) return this
+			$files.find('[data-files-row]')
+			.removeClass('msm-files-row--hover')
+			.eq(index).addClass('msm-files-row--hover')
+		})
+    })
     $('body').on('input', '[data-files-path]', function () {
         const $dfp = $(this)
 		const $df = $dfp.closest('[data-files]')

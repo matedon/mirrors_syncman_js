@@ -4,7 +4,8 @@
 .msm-files-row {
     cursor: pointer;
 }
-.msm-files-row:hover td {
+.msm-files-row:hover td,
+.msm-files-row--hover td {
     background-color: #bada55;
 }
 .msm-files-row.missing td {
