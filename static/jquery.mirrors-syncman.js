@@ -44,7 +44,7 @@ $(window).on('load', function() {
 			if (row.present) {
 				$pres = $nrow.find('[data-files-row-pres]')
 				$.each(row.present, function (i, num) {
-					$pres.append('<span class="numDisc">' + num + '</span>')
+					$pres.append('<span class="msm-num-disc">' + num + '</span>')
 				})
 			}
 		})
@@ -110,11 +110,12 @@ $(window).on('load', function() {
         }, 300)
     })
 	const fnSyncList = function () {
-		const numFiles = []
-		const numLists = []
+		const numFiles = {}
+		const numLists = {}
 		$('[data-files-row]').filter('.missing').remove()
 		$('[data-files]').each(function () {
 			const $th = $(this)
+			if ($th.find('[data-files-sync]').data().active == false) return this
 			const td = $th.data()
 			if (td.num == undefined) return this
 			numFiles[td.num] = $th
@@ -167,7 +168,12 @@ $(window).on('load', function() {
 		})
 	}
     $('body').on('click', '[data-files-sync]', function () {
-        $(this).toggleClass('btn-info').toggleClass('btn-light')
+		const $btn = $(this)
+		const dbtn = $btn.data()
+        $btn.toggleClass('btn-info').toggleClass('btn-light')
+		dbtn.active = ! dbtn.active
+    })
+	$('body').on('click', '[data-navbar-btn-sync]', function () {
 		fnSyncList()
     })
 

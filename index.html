@@ -9,21 +9,36 @@
     <link rel="stylesheet" href="static/index.css">
 </head>
 <body>
-    <main class="container-fluid mt-4">
-        <div class="row" data-files-container>
+    <main class="container-fluid">
+		<nav class="msm-navbar navbar navbar-expand-lg bg-body-tertiary">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="#">mirrorSyncman.js</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+					<div class="navbar-nav">
+						<a class="nav-link msm-navbar__button" href="#" data-navbar-btn-sync>
+							Sync
+						</a>
+					</div>
+				</div>
+			</div>
+		</nav>
+        <div class="row mt-2" data-files-container>
             <div class="col" data-files>
-                <div class="input-group mb-3">
+                <div class="input-group mb-2">
                     <span class="input-group-text">
-						<span data-files-num class="numDisc"></span>
+						<span data-files-num class="msm-num-disc"></span>
 					</span>
                     <input type="text" class="form-control" data-files-path value="m:\mirror_alpha\">
-					<button class="input-group-text btn btn-info" data-files-sync>
+					<button class="input-group-text btn btn-info" data-active="true" data-files-sync>
                         <i class="fa fa-lg fa-fw fa-balance-scale"></i>
                     </button>
                 </div>
                 <table class="table table-striped" data-files-rows>
                     <tbody>
-                        <tr data-files-row data-files-row-clone>
+                        <tr data-files-row data-files-row-clone class="msm-files-row">
                             <td data-files-row-name></td>
 							<td data-files-row-pres></td>
 							<td>
@@ -36,10 +51,6 @@
                 </table>
             </div>
         </div>
-        <footer>
-			<hr>
-            mirrorSyncman.js
-        </footer>
     </main>
 
     <script>window.$ = window.jQuery = require('jquery');</script>

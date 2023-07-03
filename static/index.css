@@ -1,19 +1,22 @@
-[data-files-row] {
-    cursor: pointer;
-}
-[data-files-row]:hover td {
-    background-color: #bada55;
-}
 [data-files-row-clone] {
 	display: none;
 }
-tr.missing td {
+.msm-files-row {
+    cursor: pointer;
+}
+.msm-files-row:hover td {
+    background-color: #bada55;
+}
+.msm-files-row.missing td {
 	color: red;
 }
-.numDisc {
+.msm-num-disc {
 	display: inline-block;
 	width: 1.5rem;
 	text-align: center;
 	border-radius: 100px;
 	background-color: rgba(0, 0, 0, 0.15);
+}
+.msm-navbar__button:hover {
+	background-color: #bada55;
 }
