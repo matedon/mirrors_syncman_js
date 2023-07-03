@@ -52,31 +52,6 @@ let mainWindow;
 
 const PORT = 8089
 
-function fieldSorter(fields) {
-	// Source: https://stackoverflow.com/a/30446887/1516015
-    return function (a, b) {
-        return fields
-            .map(function (o) {
-                var dir = 1
-                if (o[0] === '-') {
-                   dir = -1
-                   o = o.substring(1)
-                }
-                if (a[o] > b[o]) return dir
-                if (a[o] < b[o]) return -(dir)
-                return 0
-            })
-            .reduce(function firstNonZeroValue (p, n) {
-                return p ? p : n
-            }, 0)
-    }
-}
-const prepareResFiles = (files) => {
-	return files.sort(fieldSorter(['-isJumper', '-isDir', 'name']))
-}
-
-
-
 function strDiff(a, b) {
 	let i = 0
 	let j = 0
@@ -130,7 +105,7 @@ const createMainWindow = async () => {
 						console.error(problem)
 						res.end(JSON.stringify({
 							'problem': problem,
-							'files': prepareResFiles(resFiles)
+							'files': resFiles
 						}))
 					}
 					resFiles.push({
@@ -162,7 +137,7 @@ const createMainWindow = async () => {
 							}
 							res.end(JSON.stringify({
 								'problem': problem,
-								'files': prepareResFiles(resFiles)
+								'files': resFiles
 							}))
 						})
 						break
@@ -172,8 +147,7 @@ const createMainWindow = async () => {
 							domain: paramObject.domain,
 							username: paramObject.username,
 							password: paramObject.password,
-							autoClose: true,
-							autoCloseTimeout: 0
+							autoClose: true
 						})
 						let subdir = strDiff(paramObject.share, paramObject.open)
 						if (subdir[0] == '\\' || subdir[0] == '/') {
@@ -198,7 +172,7 @@ const createMainWindow = async () => {
 							}
 							res.end(JSON.stringify({
 								'type': 'smb',
-								'files': prepareResFiles(resFiles)
+								'files': resFiles
 							}))
 						})
 						break
