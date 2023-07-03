@@ -72,7 +72,7 @@ function fieldSorter(fields) {
     }
 }
 const prepareResFiles = (files) => {
-	return files.sort(fieldSorter(['isJumper', '-isDir', 'name']))
+	return files.sort(fieldSorter(['-isJumper', '-isDir', 'name']))
 }
 
 
@@ -155,6 +155,7 @@ const createMainWindow = async () => {
 									resFiles.push({
 										'name': fileName,
 										'path': filePath,
+										'isJumper': false,
 										'isDir': fs.lstatSync(filePath)
 									})
 								})
@@ -189,6 +190,7 @@ const createMainWindow = async () => {
 									resFiles.push({
 										'name': data[i].name,
 										'path': filePath,
+										'isJumper': false,
 										'isDir': data[i].isDirectory()
 									})
 								}
