@@ -91,10 +91,11 @@ $(window).on('load', function() {
 			const $files = $(this)
 			const dfiles = $files.data()
 			if (dfiles.num == dfr.num) return this
-			$files.find('[data-files-row]')
-			.removeClass('msm-files-row--hover')
-			.eq(index).addClass('msm-files-row--hover')
+			$files.find('[data-files-row]').eq(index).addClass('msm-files-row--hover')
 		})
+    })
+	$('body').on('mouseleave', '[data-files-row]', function () {
+		$('[data-files-row]').removeClass('msm-files-row--hover')
     })
     $('body').on('input', '[data-files-path]', function () {
         const $dfp = $(this)
