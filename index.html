@@ -18,7 +18,7 @@
 				</button>
 				<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 					<div class="navbar-nav">
-						<a class="nav-link msm-navbar__button" href="#" data-navbar-btn-sync>
+						<a class="msm-navbar__button btn" href="#" data-navbar-btn-sync data-files-sync data-btn-toggle="off" data-btn-toggle-on="btn-info">
 							Sync
 						</a>
 					</div>
@@ -32,7 +32,7 @@
 						<span data-files-num class="msm-num-disc"></span>
 					</span>
                     <input type="text" class="form-control" data-files-path value="m:\mirror_alpha\">
-					<button class="input-group-text btn btn-info" data-active="true" data-files-sync>
+					<button class="input-group-text btn" data-files-sync data-btn-toggle="on" data-btn-toggle-on="btn-info" data-btn-toggle-off="btn-light">
                         <i class="fa fa-lg fa-fw fa-balance-scale"></i>
                     </button>
                 </div>
@@ -60,6 +60,7 @@
     </main>
 
     <script>window.$ = window.jQuery = require('jquery');</script>
+	<script src="static/jquery.initalize.js"></script>
     <script src="static/bootstrap.bundle.min.js"></script>
     <script src="static/jquery.mirrors-syncman.js"></script>
 </body>

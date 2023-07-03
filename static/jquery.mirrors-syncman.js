@@ -109,13 +109,16 @@ $(window).on('load', function() {
             })
         }, 300)
     })
+	const fnSyncListClear = function () {
+		$('[data-files-row]').filter('.missing').remove()
+	}
 	const fnSyncList = function () {
 		const numFiles = {}
 		const numLists = {}
-		$('[data-files-row]').filter('.missing').remove()
+		fnSyncListClear()
 		$('[data-files]').each(function () {
 			const $th = $(this)
-			if ($th.find('[data-files-sync]').data().active == false) return this
+			if ($th.find('[data-files-sync]').data().active() == false) return this
 			const td = $th.data()
 			if (td.num == undefined) return this
 			numFiles[td.num] = $th
@@ -167,16 +170,33 @@ $(window).on('load', function() {
 			fnCloneRow(numFiles[num], list, true)
 		})
 	}
-    $('body').on('click', '[data-files-sync]', function () {
+	$.initialize('[data-btn-toggle]', function () {
 		const $btn = $(this)
 		const dbtn = $btn.data()
-        $btn.toggleClass('btn-info').toggleClass('btn-light')
-		dbtn.active = ! dbtn.active
-    })
+		dbtn.active = function () {
+			return dbtn.btnToggle == 'on'
+		}
+		$btn.on('click.btnToggle', function () {
+			if (dbtn.btnToggle == 'off') {
+				dbtn.btnToggle = 'on'
+				$btn.addClass(dbtn.btnToggleOn)
+				$btn.removeClass(dbtn.btnToggleOff)
+			} else if (dbtn.btnToggle == 'on') {
+				dbtn.btnToggle = 'off'
+				$btn.removeClass(dbtn.btnToggleOn)
+				$btn.addClass(dbtn.btnToggleOff)
+			}
+		})
+		dbtn.btnToggle = dbtn.btnToggle == 'on' ? 'off' : 'on'
+		$btn.trigger('click.btnToggle')
+	})
 	$('body').on('click', '[data-navbar-btn-sync]', function () {
-		fnSyncList()
+		if ($(this).data().active()) {
+			fnSyncList()
+		} else {
+			fnSyncListClear()
+		}
     })
-
 })
 
 })(jQuery);
