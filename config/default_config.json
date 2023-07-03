@@ -2,7 +2,7 @@
     "paths": [
         "C:\\",
 		{
-			"path": "\\\\192.168.0.10\\c",
+			"share": "\\\\192.168.0.10\\c",
 			"type": "smb",
 			"domain": "WORKGROUP",
 			"username": "username",
