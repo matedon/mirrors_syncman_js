@@ -172,6 +172,7 @@ const createMainWindow = async () => {
 							domain: paramObject.domain,
 							username: paramObject.username,
 							password: paramObject.password,
+							autoClose: true,
 							autoCloseTimeout: 0
 						})
 						let subdir = strDiff(paramObject.share, paramObject.open)
