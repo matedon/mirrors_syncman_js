@@ -33,7 +33,11 @@ $(window).on('load', function() {
 				return $(this).is('[data-files-row-clone]') ? false : true
 			}).remove()
 		}
-		$.each(files, function (i, row) {
+		$.each(files, function (i, fir) {
+			const row = $.extend({
+				'missing': false,
+				'present': []
+			}, fir, true)
 			let name = row.isDir ? '[' + row.name + ']' : row.name
 			const $nrow = $frc.clone(true, true).removeAttr('data-files-row-clone')
 			$nrow.data(row).appendTo($frs)
@@ -41,7 +45,7 @@ $(window).on('load', function() {
 			if (row.missing) {
 				$nrow.addClass('missing')
 			}
-			if (row.present) {
+			if (row.missing && row.present) {
 				$pres = $nrow.find('[data-files-row-pres]')
 				$.each(row.present, function (i, num) {
 					$pres.append('<span class="msm-num-disc">' + num + '</span>')
@@ -150,31 +154,31 @@ $(window).on('load', function() {
 				if (num_a == num_b) return true
 				const list_ab = []
 				$.each(list_a, function (i, row_a) {
-					const row_ac = $.extend({}, row_a, true)
 					const row_n = list_b.find(x => x.name === row_a.name)
+					let row_ac = {}
+					if (row_n == undefined) {
+						row_ac = $.extend({}, row_a, true)
+					} else {
+						row_ac = $.extend({}, row_n, true)
+					}
 					if (row_n == undefined) {
 						row_ac.missing = true
-						if (row_ac.present == undefined) {
-							row_ac.present = []
-						}
 						if (row_ac.present.includes(num_a) == false) {
 							row_ac.present.push(num_a)
 						}
-					} else if (row_ac.missing && row_ac.present.includes(num_b)) {
-						row_ac.present = jQuery.grep(row_ac.present, function(value) {
-							// Remove num_b from present array
-							return value != num_b
-						})
-						if (row_ac.present.length == 0) {
-							row_ac.missing = false
-						}
+					}
+					else if (row_ac.missing && row_a.missing == false) {
+						row_ac.present.push(num_a)
 					}
 					list_ab.push(row_ac)
 				})
+				/**
+				 * If data present in B but missing from A then keep it:
+				 */
 				$.each(list_b, function (i, row_b) {
-					const row_bc = $.extend({}, row_b, true)
 					const row_n = list_a.find(x => x.name === row_b.name)
 					if (row_n == undefined) {
+						const row_bc = $.extend({}, row_b, true)
 						list_ab.push(row_bc)
 					}
 				})
