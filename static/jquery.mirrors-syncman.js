@@ -170,6 +170,8 @@ $(window).on('load', function() {
 					else if (row_ac.missing && row_a.missing == false) {
 						row_ac.present.push(num_a)
 					}
+					// Remove duplicates
+					row_ac.present = row_ac.present.filter((e, i) => row_ac.present.indexOf(e) === i)
 					list_ab.push(row_ac)
 				})
 				/**
