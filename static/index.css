@@ -22,6 +22,21 @@
 	font-weight: bold;
 	margin: .25rem;
 }
+.msm-num-disc + .msm-num-disc {
+	margin-left: 0;
+}
+.msm-num-disc--0 {
+	color: #daa355;
+}
+.msm-num-disc--1 {
+	color: #559eda;
+}
+.msm-num-disc--1 {
+	color: #cb55da;
+}
+.msm-num-disc--0 {
+	color: #55dac6;
+}
 .msm-navbar__button:hover {
 	background-color: #bada55;
 }

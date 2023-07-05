@@ -48,7 +48,7 @@ $(window).on('load', function() {
 			if (row.missing && row.present) {
 				$pres = $nrow.find('[data-files-row-pres]')
 				$.each(row.present, function (i, num) {
-					$pres.append('<span class="msm-num-disc">' + num + '</span>')
+					$pres.append('<span class="msm-num-disc msm-num-disc--' + num + '">' + num + '</span>')
 				})
 			}
 		})
@@ -74,7 +74,7 @@ $(window).on('load', function() {
 				data.num = colNum ++
                 $clone = $fls.clone(true, true).show().appendTo($flc).data(data)
                 $clone.find('[data-files-path]').val(data.path).trigger('input')
-				$clone.find('[data-files-num]').html(data.num)
+				$clone.find('[data-files-num]').html(data.num).addClass('msm-num-disc--' + data.num)
             })
         }
     })
