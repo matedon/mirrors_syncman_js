@@ -17,7 +17,7 @@
 	text-align: center;
 	border-radius: 100px;
 	background-color: white;
-	color: #bada55;
+	color: #d8d8d8;
 	border: 1px solid grey;
 	font-weight: bold;
 	margin: .25rem;
@@ -26,16 +26,22 @@
 	margin-left: 0;
 }
 .msm-num-disc--0 {
-	color: #daa355;
+	color: #dabb55;
 }
 .msm-num-disc--1 {
+	color: #55dac6;
+}
+.msm-num-disc--2 {
 	color: #559eda;
 }
-.msm-num-disc--1 {
+.msm-num-disc--3 {
+	color: #55da84;
+}
+.msm-num-disc--4 {
 	color: #cb55da;
 }
-.msm-num-disc--0 {
-	color: #55dac6;
+.msm-num-disc--5 {
+	color: #dada55;
 }
 .msm-navbar__button:hover {
 	background-color: #bada55;
