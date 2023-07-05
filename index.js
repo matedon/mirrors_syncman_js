@@ -127,11 +127,12 @@ const createMainWindow = async () => {
 							} else {
 								readFiles.forEach(function (fileName) {
 									const filePath = path.join(paramObject.open, fileName)
+									const stats = fs.lstatSync(filePath)
 									resFiles.push({
 										'name': fileName,
 										'path': filePath,
 										'isJumper': false,
-										'isDir': fs.lstatSync(filePath)
+										'isDir': stats.isDirectory()
 									})
 								})
 							}
