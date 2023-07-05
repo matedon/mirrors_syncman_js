@@ -17,7 +17,24 @@
 	text-align: center;
 	border-radius: 100px;
 	background-color: rgba(0, 0, 0, 0.15);
+	margin: .25rem;
 }
 .msm-navbar__button:hover {
 	background-color: #bada55;
+}
+.msm-files-row-name {
+	height: 1.5rem;
+	overflow: hidden;
+}
+.msm-files-row-cell {
+	position: relative;
+}
+.msm-files-row-tools {
+	position: absolute;
+	right: .5rem;
+	top: .25rem;
+	width: 200px;
+}
+.msm-files-row-tools > * {
+	float: right;
 }

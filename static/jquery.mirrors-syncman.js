@@ -37,7 +37,7 @@ $(window).on('load', function() {
 			let name = row.isDir ? '[' + row.name + ']' : row.name
 			const $nrow = $frc.clone(true, true).removeAttr('data-files-row-clone')
 			$nrow.data(row).appendTo($frs)
-			$nrow.find('[data-files-row-name]').html(name)
+			$nrow.find('[data-files-row-name]').html(name).attr('title', name)
 			if (row.missing) {
 				$nrow.addClass('missing')
 			}

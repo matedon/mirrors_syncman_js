@@ -36,21 +36,17 @@
                         <i class="fa fa-lg fa-fw fa-balance-scale"></i>
                     </button>
                 </div>
-                <table class="table table-striped" data-files-rows>
+                <table class="table table-responsive table-striped" data-files-rows>
                     <tbody>
                         <tr data-files-row data-files-row-clone class="msm-files-row">
-                            <td data-files-row-name></td>
-							<td data-files-row-pres></td>
-							<td>
-								<button data-files-row-rename class="btn btn-sm btn-light" title="Rename This">
-									R1
-								</button>
-								<button data-files-row-rename-all class="btn btn-sm btn-light" title="Rename All" disabled>
-									RA
-								</button>
-								<button data-files-row-copy class="btn btn-sm btn-light" title="Copy" disabled>
-									CP
-								</button>
+                            <td class="msm-files-row-cell">
+								<div data-files-row-name class="msm-files-row-name"></div>
+								<div class="msm-files-row-tools">
+									<button data-files-row-action class="btn btn-sm btn-light" title="Rename This">
+										A
+									</button>
+									<div data-files-row-pres></div>
+								</div>
 							</td>
                         </tr>
                     </tbody>
