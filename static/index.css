@@ -44,6 +44,9 @@
 .msm-num-disc--5 {
 	color: #dada55;
 }
+.msm-num-disc-gear {
+	margin-left: -1rem;
+}
 .msm-navbar__button:hover {
 	background-color: #bada55;
 }

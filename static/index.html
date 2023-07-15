@@ -28,11 +28,12 @@
         <div class="row mt-2" data-files-container>
             <div class="msm-files col" data-files>
                 <div class="input-group mb-2">
-                    <span class="input-group-text">
-						<span data-files-num class="msm-num-disc"></span>
-					</span>
+					<button class="input-group-text btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#msm-modal-col-edit">
+                        <span data-files-num class="msm-num-disc"></span>
+						<i class="fa fa-lg fa-fw fa-gear msm-num-disc-gear"></i>
+                    </button>
                     <input type="text" class="form-control" data-files-path value="m:\mirror_alpha\">
-					<button class="input-group-text btn" data-files-sync data-btn-toggle="on" data-btn-toggle-on="btn-info" data-btn-toggle-off="btn-light">
+					<button class="input-group-text btn btn-sm btn-outline-secondary" data-files-sync data-btn-toggle="on" data-btn-toggle-on="btn-info" data-btn-toggle-off="btn-light">
                         <i class="fa fa-lg fa-fw fa-balance-scale"></i>
                     </button>
                 </div>
@@ -60,6 +61,50 @@
             </div>
         </div>
     </main>
+
+	<form class="modal fade" id="msm-modal-col-edit" tabindex="-1">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h1 class="modal-title fs-5">Edit settings</h1>
+			  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="form-floating mb-3">
+					<select class="form-control" id="msm-modal-ce-type" name="type">
+						<option></option>
+						<option>smb</option>
+						<option>files</option>
+					</select>
+					<label for="msm-modal-ce-type">Type</label>
+				</div>
+				<div class="form-floating mb-3">
+					<input type="text" class="form-control" id="msm-modal-ce-share" name="share">
+					<label for="msm-modal-ce-share">Share</label>
+				</div>
+				<div class="form-floating mb-3">
+					<input type="text" class="form-control" id="msm-modal-ce-open" name="open">
+					<label for="msm-modal-ce-open">Open</label>
+				</div>
+				<div class="form-floating mb-3">
+					<input type="text" class="form-control" id="msm-modal-ce-domain" name="domain">
+					<label for="msm-modal-ce-domain">Domain</label>
+				</div>
+				<div class="form-floating mb-3">
+					<input type="text" class="form-control" id="msm-modal-ce-username" name="username">
+					<label for="msm-modal-ce-username">Username</label>
+				</div>
+				<div class="form-floating mb-3">
+					<input type="password" class="form-control" id="msm-modal-ce-password" name="password">
+					<label for="msm-modal-ce-password">Password</label>
+				</div>
+			</div>
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-primary">Save</button>
+			</div>
+		  </div>
+		</div>
+	</form>
 
     <script>window.$ = window.jQuery = require('jquery');</script>
 	<script src="jquery.initalize.js"></script>
