@@ -199,7 +199,7 @@ const createMainWindow = async () => {
 		mainWindow = undefined
 	});
 
-	await window_.loadFile(path.join(__dirname, 'index.html'))
+	await window_.loadFile(path.join(__dirname, '/static/index.html'))
 
 	return window_
 };
