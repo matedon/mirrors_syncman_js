@@ -1,4 +1,5 @@
-[data-files-row-clone] {
+[data-files-row-clone],
+[data-files-alert-clone] {
 	display: none;
 }
 .msm-files-row {

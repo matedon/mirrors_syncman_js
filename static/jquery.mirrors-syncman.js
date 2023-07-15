@@ -123,7 +123,11 @@ $(window).on('load', function() {
                 'success': function (res) {
                     console.log(res)
 					if (res.problem) {
-						alert(res.problem)
+						const $als = $df.find('[data-files-alerts]')
+						const $alc = $als.find('[data-files-alert-clone]')
+						const $alr = $alc.clone(true, true).removeAttr('data-files-alert-clone')
+						$alr.appendTo($als).find('[data-files-alert-text]').text(res.problem)
+						// alert(res.problem)
 						return false
 					}
 					fnCloneRow($dfp.closest('[data-files]'), fnSortDir(res.files), true)
