@@ -137,8 +137,9 @@ const createMainWindow = async () => {
 								})
 							}
 							res.end(JSON.stringify({
-								'problem': problem,
-								'files': resFiles
+								'type': 'files',
+								'files': resFiles,
+								'problem': problem
 							}))
 						})
 						break
@@ -157,6 +158,7 @@ const createMainWindow = async () => {
 						}
 						smb2Client.readdir(subdir, { stats: true }, function(err, data) {
 							if (err) {
+								problem = 'Unable to scan network: ' + err
 								console.log("Error (readdir):\n", err)
 							} else {
 								console.log("Connection made.")
@@ -173,7 +175,8 @@ const createMainWindow = async () => {
 							}
 							res.end(JSON.stringify({
 								'type': 'smb',
-								'files': resFiles
+								'files': resFiles,
+								'problem': problem
 							}))
 						})
 						break
