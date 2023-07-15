@@ -226,6 +226,20 @@ $(window).on('load', function() {
 			fnSyncListClear()
 		}
     })
+	$('body').on('click', '[data-files-col-edit]', function () {
+		const $dfp = $(this)
+		const $df = $dfp.closest('[data-files]')
+        const dataCol = $df.data()
+		console.log(dataCol)
+		const $mod = $('[data-files-col-edit-modal]')
+		const bsMod = new bootstrap.Modal($mod).show()
+		$mod.find('[name="share"]').val(dataCol.share)
+		$mod.find('[name="type"]').val(dataCol.type)
+		$mod.find('[name="open"]').val(dataCol.open)
+		$mod.find('[name="domain"]').val(dataCol.domain)
+		$mod.find('[name="username"]').val(dataCol.username)
+		$mod.find('[name="password"]').val(dataCol.password)
+    })
 })
 
 })(jQuery);

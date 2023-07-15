@@ -28,7 +28,7 @@
         <div class="row mt-2" data-files-container>
             <div class="msm-files col" data-files>
                 <div class="input-group mb-2">
-					<button class="input-group-text btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#msm-modal-col-edit">
+					<button data-files-col-edit class="input-group-text btn btn-sm btn-light">
                         <span data-files-num class="msm-num-disc"></span>
 						<i class="fa fa-lg fa-fw fa-gear msm-num-disc-gear"></i>
                     </button>
@@ -62,7 +62,7 @@
         </div>
     </main>
 
-	<form class="modal fade" id="msm-modal-col-edit" tabindex="-1">
+	<form class="modal fade" id="msm-modal-col-edit" data-files-col-edit-modal tabindex="-1">
 		<div class="modal-dialog">
 		  <div class="modal-content">
 			<div class="modal-header">
