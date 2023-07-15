@@ -54,22 +54,18 @@ $(window).on('load', function() {
 		})
 	}
     $.ajax({
-        'url': 'http://localhost:8089/config',
+        'url': 'http://localhost:8089/read-cols',
 		'type': 'POST',
         'dataType': 'json',
         'success': function (res) {
             console.log(res)
-            $.each(res.paths, function (i, obj) {
-                console.log(obj)
-				let data = {}
-				if (typeof obj == 'string') {
-					data.path = obj
-					data.type = 'files'
-				} else if (typeof obj == 'object' && obj.type) {
-					data = obj
-					if (data.type == 'smb' && data.share) {
-						data.path = data.share + '\\' + data.open
-					}
+            $.each(res.cols, function (i, data) {
+                console.log(data)
+				if (data.type == 'smb' && data.share) {
+					data.path = data.share + '\\' + data.open
+				}
+				else if (data.type == 'files') {
+					data.path = data.share
 				}
 				data.num = colNum ++
                 $clone = $fls.clone(true, true).show().appendTo($flc).data(data)
@@ -226,19 +222,57 @@ $(window).on('load', function() {
 			fnSyncListClear()
 		}
     })
-	$('body').on('click', '[data-files-col-edit]', function () {
+	$('body').on('click', '[data-files-ce-open]', function () {
 		const $dfp = $(this)
 		const $df = $dfp.closest('[data-files]')
         const dataCol = $df.data()
 		console.log(dataCol)
-		const $mod = $('[data-files-col-edit-modal]')
+		const $mod = $('[data-files-ce-modal]')
 		const bsMod = new bootstrap.Modal($mod).show()
+		$mod.find(':input').val('')
+		if (dataCol == undefined) return this
+		$mod.find('[name="num"]').val(dataCol.num)
 		$mod.find('[name="share"]').val(dataCol.share)
 		$mod.find('[name="type"]').val(dataCol.type)
 		$mod.find('[name="open"]').val(dataCol.open)
 		$mod.find('[name="domain"]').val(dataCol.domain)
 		$mod.find('[name="username"]').val(dataCol.username)
 		$mod.find('[name="password"]').val(dataCol.password)
+    })
+	$('body').on('click', '[data-files-cem-btn-del]', function () {
+		const $this = $(this)
+		const $mod = $this.closest('[data-files-ce-modal]')
+		const dataCol = $mod.serializeJSON()
+		if (confirm('Delete column ' + $mod.find('[name="num"]').val() + '?')) {
+			$.ajax({
+				'url': 'http://localhost:8089/del-col',
+				'type': 'POST',
+				'dataType': 'json',
+				'data': {
+					'col' : dataCol
+				},
+				'success': function (res) {
+					console.log(res)
+				}
+			})
+		}
+    })
+	$('body').on('click', '[data-files-cem-btn-save]', function () {
+		const $this = $(this)
+		const $mod = $this.closest('[data-files-ce-modal]')
+		const dataCol = $mod.serializeJSON()
+		console.log(dataCol)
+		$.ajax({
+			'url': 'http://localhost:8089/save-col',
+			'type': 'POST',
+			'dataType': 'json',
+			'data': {
+				'col' : dataCol
+			},
+			'success': function (res) {
+				console.log(res)
+			}
+		})
     })
 })
 
