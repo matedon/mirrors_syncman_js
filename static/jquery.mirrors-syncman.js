@@ -341,8 +341,12 @@ $(window).on('load', function() {
 		$('[name="name"]').trigger('select')
 
 	})
-	$('body').on('click', '[data-mbtn-rename-save]', function () {
-
+	$('body').on('submit', 'form', function () {
+		/**
+		 * Prevent form submit by hitting Enter.
+		 * All occurate forms handled with ajax call.
+		 */
+		return false
     })
 })
 
