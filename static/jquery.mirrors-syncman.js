@@ -252,28 +252,29 @@ $(window).on('load', function() {
 			fnSyncListClear()
 		}
     })
-	const $mod = $('[data-files-ce-modal]')
-	const bsMod = new bootstrap.Modal($mod)
+	const $modCe = $('[data-msm-modal-ce]')
+	const bsModCe = new bootstrap.Modal($modCe)
+	const $modRen = $('[data-msm-modal-rename]')
+	const bsModRen = new bootstrap.Modal($modRen)
 	$('body').on('click', '[data-files-ce-open]', function () {
 		const $dfp = $(this)
 		const $df = $dfp.closest('[data-files]')
         const dataCol = $df.data()
 		console.log(dataCol)
-		$mod.find(':input').val('')
-		bsMod.show()
+		$modCe.find(':input').val('')
+		bsModCe.show()
 		if (dataCol == undefined) return this
-		$mod.find('[name="num"]').val(dataCol.num)
-		$mod.find('[name="share"]').val(dataCol.share)
-		$mod.find('[name="type"]').val(dataCol.type)
-		$mod.find('[name="open"]').val(dataCol.open)
-		$mod.find('[name="domain"]').val(dataCol.domain)
-		$mod.find('[name="username"]').val(dataCol.username)
-		$mod.find('[name="password"]').val(dataCol.password)
+		$modCe.find('[name="num"]').val(dataCol.num)
+		$modCe.find('[name="share"]').val(dataCol.share)
+		$modCe.find('[name="type"]').val(dataCol.type)
+		$modCe.find('[name="open"]').val(dataCol.open)
+		$modCe.find('[name="domain"]').val(dataCol.domain)
+		$modCe.find('[name="username"]').val(dataCol.username)
+		$modCe.find('[name="password"]').val(dataCol.password)
     })
-	$('body').on('click', '[data-files-cem-btn-del]', function () {
-		const $this = $(this)
-		const dataCol = $mod.serializeJSON()
-		if (confirm('Delete column ' + $mod.find('[name="num"]').val() + '?')) {
+	$('body').on('click', '[data-mbtn-ce-del]', function () {
+		const dataCol = $modCe.serializeJSON()
+		if (confirm('Delete column ' + $modCe.find('[name="num"]').val() + '?')) {
 			$.ajax({
 				'url': 'http://localhost:8089/del-col',
 				'type': 'POST',
@@ -284,15 +285,13 @@ $(window).on('load', function() {
 				'success': function (res) {
 					console.log(res)
 					fnDelCol(dataCol.num)
-					bsMod.hide()
+					bsModCe.hide()
 				}
 			})
 		}
     })
-	$('body').on('click', '[data-files-cem-btn-save]', function () {
-		const $this = $(this)
-		const $mod = $this.closest('[data-files-ce-modal]')
-		const dataCol = $mod.serializeJSON()
+	$('body').on('click', '[data-mbtn-ce-save]', function () {
+		const dataCol = $modCe.serializeJSON()
 		console.log(dataCol)
 		$.ajax({
 			'url': 'http://localhost:8089/save-col',
@@ -304,9 +303,19 @@ $(window).on('load', function() {
 			'success': function (res) {
 				console.log(res)
 				fnReadCols(dataCol.num * 1)
-				bsMod.hide()
+				bsModCe.hide()
 			}
 		})
+    })
+	$('body').on('click', '[data-files-row-action]', function () {
+		const $row = $(this).closest('[data-files-row]')
+		const dataRow = $row.data()
+		bsModRen.show()
+		$modRen.find('[name="name"]').val(dataRow.name)
+		// TODO: .trigger('focus') not works!
+    })
+	$('body').on('click', '[data-mbtn-rename-save]', function () {
+		alert('Save soon...')
     })
 })
 

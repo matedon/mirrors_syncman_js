@@ -65,7 +65,7 @@
         </div>
     </main>
 
-	<form class="modal fade" id="msm-modal-ce" data-files-ce-modal tabindex="-1">
+	<form class="modal fade" id="msm-modal-ce" data-msm-modal-ce tabindex="-1">
 		<div class="modal-dialog">
 		  <div class="modal-content">
 			<div class="modal-header">
@@ -107,8 +107,27 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-danger" data-files-cem-btn-del>Remove</button>
-				<button type="button" class="btn btn-primary" data-files-cem-btn-save>Save</button>
+				<button type="button" class="btn btn-danger" data-mbtn-ce-del>Remove</button>
+				<button type="button" class="btn btn-primary" data-mbtn-ce-save>Save</button>
+			</div>
+		  </div>
+		</div>
+	</form>
+	<form class="modal fade" id="msm-modal-ce" data-msm-modal-rename tabindex="-1">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h1 class="modal-title fs-5">Rename</h1>
+			  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="form-floating mb-3">
+					<input type="text" class="form-control" id="msm-modal-ce-name" name="name">
+					<label for="msm-modal-ce-name">name</label>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-mbtn-rename-save>Save</button>
 			</div>
 		  </div>
 		</div>

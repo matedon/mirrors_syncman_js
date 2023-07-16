@@ -75,6 +75,9 @@ app.post('/read-cols', function (req, res) {
 			return _.contains(req.body.colNums, col.num)
 		})
 	}
+	_.each(cols, function (col, key) {
+		col.num = key
+	})
 	res.send({
 		'cols': cols
 	})
