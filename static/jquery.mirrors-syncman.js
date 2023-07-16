@@ -24,6 +24,10 @@ const fnSortDir = function (files) {
 $(window).on('load', function() {
     const $flc = $('[data-files-container]')
     const $fls = $('[data-files]').hide()
+	const fnRowName = function ($row, data) {
+		let name = data.isDir ? '[' + data.name + ']' : data.name
+		return $row.find('[data-files-row-name]').html(name).attr('title', name)
+	}
 	const fnCloneRow = function ($fls, files, doClear) {
 		const $frc = $fls.find('[data-files-row-clone]')
 		const $frs = $fls.find('[data-files-rows]')
@@ -37,10 +41,9 @@ $(window).on('load', function() {
 				'missing': false,
 				'present': []
 			}, fir, true)
-			let name = row.isDir ? '[' + row.name + ']' : row.name
 			const $nrow = $frc.clone(true, true).removeAttr('data-files-row-clone')
 			$nrow.data(row).appendTo($frs)
-			$nrow.find('[data-files-row-name]').html(name).attr('title', name)
+			fnRowName($nrow, row)
 			if (row.missing) {
 				$nrow.addClass('missing')
 			}
@@ -122,35 +125,36 @@ $(window).on('load', function() {
 		$('[data-files-row]').removeClass('msm-files-row--hover')
     })
     $('body').on('input', '[data-files-path]', function () {
-        const $dfp = $(this)
-		const $df = $dfp.closest('[data-files]')
-        const dataCol = $df.data()
-        if (dataCol.filesPathTime) {
-            clearTimeout(dataCol.filesPathTime)
+        const $path = $(this)
+		const dataPath = $path.data()
+		const $files = $path.closest('[data-files]')
+        const dataCol = $files.data()
+        if (dataPath.filesPathTime) {
+            clearTimeout(dataPath.filesPathTime)
         }
-        dataCol.filesPathTime = setTimeout(function() {
-            if (dataCol.$filesPathReq != null) {
-                dataCol.$filesPathReq.abort()
-                dataCol.$filesPathReq = null
+        dataPath.filesPathTime = setTimeout(function() {
+            if (dataPath.$filesPathReq != null) {
+                dataPath.$filesPathReq.abort()
+                dataPath.$filesPathReq = null
             }
-            dataCol.$filesPathReq = $.ajax({
+            dataPath.$filesPathReq = $.ajax({
                 'url': 'http://localhost:8089/' + dataCol.type,
 				'type': 'POST',
                 'dataType': 'json',
                 'data': $.extend({}, dataCol, {
-					'open': $dfp.val()
+					'open': $path.val()
 				}, true),
                 'success': function (res) {
                     console.log(res)
 					if (res.problem) {
 						dataCol.problem = res.problem
-						const $als = $df.find('[data-files-alerts]')
+						const $als = $files.find('[data-files-alerts]')
 						const $alc = $als.find('[data-files-alert-clone]')
 						const $alr = $alc.clone(true, true).removeAttr('data-files-alert-clone')
 						$alr.appendTo($als).find('[data-files-alert-text]').text(res.problem)
 						return false
 					}
-					fnCloneRow($dfp.closest('[data-files]'), fnSortDir(res.files), true)
+					fnCloneRow($path.closest('[data-files]'), fnSortDir(res.files), true)
                 }
             })
         }, 300)
@@ -257,9 +261,8 @@ $(window).on('load', function() {
 	const $modRen = $('[data-msm-modal-rename]')
 	const bsModRen = new bootstrap.Modal($modRen)
 	$('body').on('click', '[data-files-ce-open]', function () {
-		const $dfp = $(this)
-		const $df = $dfp.closest('[data-files]')
-        const dataCol = $df.data()
+		const $files = $(this).closest('[data-files]')
+        const dataCol = $files.data()
 		console.log(dataCol)
 		$modCe.find(':input').val('')
 		bsModCe.show()
@@ -309,13 +312,37 @@ $(window).on('load', function() {
     })
 	$('body').on('click', '[data-files-row-action]', function () {
 		const $row = $(this).closest('[data-files-row]')
+		const $col = $row.closest('[data-files]')
 		const dataRow = $row.data()
+		const dataCol = $col.data()
 		bsModRen.show()
 		$modRen.find('[name="name"]').val(dataRow.name)
-		// TODO: .trigger('focus') not works!
+		$modRen.off('click', '[data-mbtn-rename-save]')
+		$modRen.on('click', '[data-mbtn-rename-save]', function () {
+			const newRow = $.extend({}, dataRow, $modRen.serializeJSON())
+			$.ajax({
+				'url': 'http://localhost:8089/rename-row',
+				'type': 'POST',
+				'dataType': 'json',
+				'data': {
+					'col' : dataCol,
+					'row': newRow
+				},
+				'success': function (res) {
+					console.log(res)
+					$row.data(newRow)
+					fnRowName($row, newRow)
+					bsModRen.hide()
+				}
+			})
+		})
     })
+	$modRen.on('shown.bs.modal', function() {
+		$('[name="name"]').trigger('select')
+
+	})
 	$('body').on('click', '[data-mbtn-rename-save]', function () {
-		alert('Save soon...')
+
     })
 })
 

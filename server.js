@@ -175,3 +175,9 @@ app.post('/smb', function (req, res) {
 		})
 	})
 })
+app.post('/rename-row', function (req, res) {
+	// TODO: rename files/smb
+	res.send({
+		'row': req.body.row
+	})
+})
