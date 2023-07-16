@@ -33,7 +33,8 @@
 		"http": "^0.0.1-security",
 		"jquery": "^3.7.0",
 		"querystrings": "^0.4.0",
-		"string_decoder": "^1.3.0"
+		"string_decoder": "^1.3.0",
+		"underscore": "^1.13.6"
 	},
 	"devDependencies": {
 		"electron": "^25.2.0",

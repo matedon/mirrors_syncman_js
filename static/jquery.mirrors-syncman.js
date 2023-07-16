@@ -24,7 +24,6 @@ const fnSortDir = function (files) {
 $(window).on('load', function() {
     const $flc = $('[data-files-container]')
     const $fls = $('[data-files]').hide()
-	let colNum = 0
 	const fnCloneRow = function ($fls, files, doClear) {
 		const $frc = $fls.find('[data-files-row-clone]')
 		const $frs = $fls.find('[data-files-rows]')
@@ -53,27 +52,49 @@ $(window).on('load', function() {
 			}
 		})
 	}
-    $.ajax({
-        'url': 'http://localhost:8089/read-cols',
-		'type': 'POST',
-        'dataType': 'json',
-        'success': function (res) {
-            console.log(res)
-            $.each(res.cols, function (i, data) {
-                console.log(data)
-				if (data.type == 'smb' && data.share) {
-					data.path = data.share + '\\' + data.open
-				}
-				else if (data.type == 'files') {
-					data.path = data.share
-				}
-				data.num = colNum ++
-                $clone = $fls.clone(true, true).show().appendTo($flc).data(data)
-                $clone.find('[data-files-path]').val(data.path).trigger('input')
-				$clone.find('[data-files-num]').html(data.num).addClass('msm-num-disc--' + data.num)
-            })
-        }
-    })
+	const fnDelCol = function (col) {
+		$('[data-files]').filter(function () {
+			return $(this).data().num == col
+		}).remove()
+	}
+	const fnReadCols = function (colNums) {
+		if (typeof colNums !== 'array') {
+			colNums = [colNums]
+		}
+		$.ajax({
+			'url': 'http://localhost:8089/read-cols',
+			'type': 'POST',
+			'dataType': 'json',
+			'data': {
+				colNums: colNums
+			},
+			'success': function (res) {
+				console.log(res)
+				$.each(res.cols, function (i, data) {
+					console.log(data)
+					// fnDelCol(data.num)
+					if (data.open) {
+						data.path = data.share + '\\' + data.open
+					} else {
+						data.path = data.share
+					}
+					data.num = data.num * 1
+					let $col
+					if (colNums.includes(data.num)) {
+						$col = $('[data-files]').filter(function () {
+							return $(this).data().num == data.num
+						})
+					} else {
+						$col = $fls.clone(true, true).show().appendTo($flc)
+					}
+					$col.data(data)
+					$col.find('[data-files-path]').val(data.path).trigger('input')
+					$col.find('[data-files-num]').html(data.num).addClass('msm-num-disc--' + data.num)
+				})
+			}
+		})
+	}
+    fnReadCols()
     $('body').on('dblclick', '[data-files-row]', function () {
         const $th = $(this)
         const td = $th.data()
@@ -222,14 +243,15 @@ $(window).on('load', function() {
 			fnSyncListClear()
 		}
     })
+	const $mod = $('[data-files-ce-modal]')
+	const bsMod = new bootstrap.Modal($mod)
 	$('body').on('click', '[data-files-ce-open]', function () {
 		const $dfp = $(this)
 		const $df = $dfp.closest('[data-files]')
         const dataCol = $df.data()
 		console.log(dataCol)
-		const $mod = $('[data-files-ce-modal]')
-		const bsMod = new bootstrap.Modal($mod).show()
 		$mod.find(':input').val('')
+		bsMod.show()
 		if (dataCol == undefined) return this
 		$mod.find('[name="num"]').val(dataCol.num)
 		$mod.find('[name="share"]').val(dataCol.share)
@@ -241,7 +263,6 @@ $(window).on('load', function() {
     })
 	$('body').on('click', '[data-files-cem-btn-del]', function () {
 		const $this = $(this)
-		const $mod = $this.closest('[data-files-ce-modal]')
 		const dataCol = $mod.serializeJSON()
 		if (confirm('Delete column ' + $mod.find('[name="num"]').val() + '?')) {
 			$.ajax({
@@ -253,6 +274,8 @@ $(window).on('load', function() {
 				},
 				'success': function (res) {
 					console.log(res)
+					fnDelCol(dataCol.num)
+					bsMod.hide()
 				}
 			})
 		}
@@ -271,6 +294,8 @@ $(window).on('load', function() {
 			},
 			'success': function (res) {
 				console.log(res)
+				fnReadCols(dataCol.num * 1)
+				bsMod.hide()
 			}
 		})
     })

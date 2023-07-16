@@ -3,6 +3,7 @@ const options = require('./options.js')
 const SMB2 = require('@marsaud/smb2')
 const fs = require('fs')
 const path = require('path')
+const _ = require('underscore')
 
 let app = express()
 app.use(express.json())
@@ -68,6 +69,11 @@ app.post('/read-cols', function (req, res) {
 	let cols = options.get('columns')
 	if (cols == undefined) {
 		cols = []
+	}
+	if (req.body.colNums && req.body.colNums.length) {
+		cols = _.filter(cols, function (col) {
+			return _.contains(req.body.colNums, col.num)
+		})
 	}
 	res.send({
 		'cols': cols
