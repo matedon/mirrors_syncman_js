@@ -26,7 +26,7 @@ const strDiff = function (ai, bi) {
 			ret = item.value
 		}
 	})
-	console.log('diff', a, b, diff, ret)
+	// console.log('diff', a, b, diff, ret)
 	return ret
 }
 

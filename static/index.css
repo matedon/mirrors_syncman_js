@@ -2,6 +2,11 @@
 [data-files-alert-clone] {
 	display: none;
 }
+input[readonly],
+input[readonly]:focus {
+	color: #999;
+	background-color: #f8f8f8;
+}
 .msm-files-row {
     cursor: pointer;
 }
@@ -10,6 +15,18 @@
 }
 .msm-files-row--hover td {
     background-color: #bada55 !important;
+}
+.msm-files-row--flash {
+	animation-name: flash;
+	animation-duration: 3s;
+}
+@keyframes flash {
+	0% { opacity: 0; }
+	5% { opacity: 1; }
+	10% { opacity: 0 ;}
+	15% { opacity: 1; }
+	20% { opacity: 0; }
+	25% { opacity: 1; }
 }
 .msm-files-row.missing td {
 	color: red;

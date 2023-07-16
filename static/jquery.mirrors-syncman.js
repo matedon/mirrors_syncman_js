@@ -22,6 +22,7 @@ const fnSortDir = function (files) {
 	return files.sort(fnFieldSorter(['-isJumper', '-isDir', 'name']))
 }
 $(window).on('load', function() {
+	console.log('window loaded')
     const $flc = $('[data-files-container]')
     const $fls = $('[data-files]').hide()
 	const fnRowName = function ($row, data) {
@@ -99,9 +100,33 @@ $(window).on('load', function() {
 	}
     fnReadCols()
     $('body').on('dblclick', '[data-files-row]', function () {
-        const $th = $(this)
-        const td = $th.data()
-        $th.closest('[data-files]').find('[data-files-path]').val(td.path).trigger('input')
+        const $row = $(this)
+        const dataRow = $row.data()
+		const fnRowAction = function ($r, p) {
+			return $r.closest('[data-files]').find('[data-files-path]').val(p).trigger('input')
+		}
+		if ($('[data-navbar-btn-sync]').data().active()) {
+			const $rows = $('[data-files-row]').filter(function () {
+				const $row = $(this)
+				const dataRow = $row.data()
+				if (dataRow.hover !== true) return false
+				if (dataRow.missing == true) {
+					$row.addClass('msm-files-row--flash')
+					const time = setTimeout(function () {
+						$row.removeClass('msm-files-row--flash')
+					}, 3000)
+					return false
+				}
+				return this
+			})
+			if ($rows.length == $('[data-files]').filter(':visible').length) {
+				$rows.each(function () {
+					fnRowAction($(this), $(this).data().path)
+				})
+			}
+		} else {
+			fnRowAction($row, dataRow.path)
+		}
     })
 	$('body').on('mouseover', '[data-files-row]', function () {
 		if ($('[data-navbar-btn-sync]').data().active() == false) {
@@ -118,12 +143,13 @@ $(window).on('load', function() {
 			if ($files.find('[data-files-sync]').data().active() == false) {
 				return this
 			}
-			$files.find('[data-files-row]').eq(index).addClass('msm-files-row--hover')
+			$files.find('[data-files-row]').eq(index).data('hover', true).addClass('msm-files-row--hover')
 		})
     })
 	$('body').on('mouseleave', '[data-files-row]', function () {
-		$('[data-files-row]').removeClass('msm-files-row--hover')
+		$('[data-files-row]').data('hover', false).removeClass('msm-files-row--hover')
     })
+	let syncTime
     $('body').on('input', '[data-files-path]', function () {
         const $path = $(this)
 		const dataPath = $path.data()
@@ -155,28 +181,37 @@ $(window).on('load', function() {
 						return false
 					}
 					fnCloneRow($path.closest('[data-files]'), fnSortDir(res.files), true)
+					if ($('[data-navbar-btn-sync]').data().active()) {
+						if (syncTime) clearTimeout(syncTime)
+						syncTime = setTimeout(function () {
+							fnSyncList()
+						}, 300)
+					}
                 }
             })
-        }, 300)
+        }, 500)
     })
 	const fnSyncListClear = function () {
 		$('[data-files-row]').filter('.missing').remove()
+		$('[data-files-path]').removeAttr('readonly')
 	}
 	const fnSyncList = function () {
+		console.log('fnSyncList')
 		const numFiles = {}
 		const numLists = {}
 		fnSyncListClear()
 		$('[data-files]').each(function () {
-			const $th = $(this)
-			if ($th.find('[data-files-sync]').data().active() == false) return this
-			const td = $th.data()
-			if (td.problem) return this
-			if (td.num == undefined) return this
-			numFiles[td.num] = $th
-			numLists[td.num] = []
-			$th.find('[data-files-row]').not('[data-files-row-clone]').each(function () {
-				numLists[td.num].push($(this).data())
+			const $col = $(this)
+			if ($col.find('[data-files-sync]').data().active() == false) return this
+			const dataCol = $col.data()
+			if (dataCol.problem) return this
+			if (dataCol.num == undefined) return this
+			numFiles[dataCol.num] = $col
+			numLists[dataCol.num] = []
+			$col.find('[data-files-row]').not('[data-files-row-clone]').each(function () {
+				numLists[dataCol.num].push($(this).data())
 			})
+			$col.find('[data-files-path]').attr('readonly', true)
 		})
 		$.each(numLists, function(num_a, list_a) {
 			$.each(numLists, function(num_b, list_b) {
@@ -235,7 +270,8 @@ $(window).on('load', function() {
 		dbtn.active = function () {
 			return dbtn.btnToggle == 'on'
 		}
-		$btn.on('click.btnToggle', function () {
+		$btn.off('mousedown.btnToggle')
+		$btn.on('mousedown.btnToggle', function () {
 			if (dbtn.btnToggle == 'off') {
 				dbtn.btnToggle = 'on'
 				$btn.addClass(dbtn.btnToggleOn)
@@ -247,9 +283,10 @@ $(window).on('load', function() {
 			}
 		})
 		dbtn.btnToggle = dbtn.btnToggle == 'on' ? 'off' : 'on'
-		$btn.trigger('click.btnToggle')
+		$btn.trigger('mousedown.btnToggle')
 	})
-	$('body').on('click', '[data-navbar-btn-sync]', function () {
+	$('body').on('mouseup', '[data-navbar-btn-sync]', function () {
+		console.log('[data-navbar-btn-sync] click')
 		if ($(this).data().active()) {
 			fnSyncList()
 		} else {
