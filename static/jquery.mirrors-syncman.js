@@ -112,6 +112,9 @@ $(window).on('load', function() {
 			const $files = $(this)
 			const dfiles = $files.data()
 			if (dfiles.num == dfr.num) return this
+			if ($files.find('[data-files-sync]').data().active() == false) {
+				return this
+			}
 			$files.find('[data-files-row]').eq(index).addClass('msm-files-row--hover')
 		})
     })
@@ -216,6 +219,12 @@ $(window).on('load', function() {
 			fnCloneRow(numFiles[num], list, true)
 		})
 	}
+	$('body').on('click', '[data-files-sync]', function () {
+		if ($('[data-navbar-btn-sync]').data().active() == false) {
+			return this
+		}
+		fnSyncList()
+    })
 	$.initialize('[data-btn-toggle]', function () {
 		const $btn = $(this)
 		const dbtn = $btn.data()
