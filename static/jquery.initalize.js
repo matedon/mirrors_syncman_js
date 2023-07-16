@@ -15,7 +15,7 @@
     var combinators = [' ', '>', '+', '~']; // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors#Combinators
     var fraternisers = ['+', '~']; // These combinators involve siblings.
     var complexTypes = ['ATTR', 'PSEUDO', 'ID', 'CLASS']; // These selectors are based upon attributes.
-    
+
     //Check if browser supports "matches" function
     if (!Element.prototype.matches) {
         Element.prototype.matches = Element.prototype.matchesSelector ||
@@ -100,12 +100,12 @@
                         matches.push(mutations[m].target);
 
                     // If the selector is fraternal, query siblings of the mutated node for matches.
-                    if (msobserver.isFraternal)
+                    if (msobserver.isFraternal && mutations[m].target.parentElement)
                         matches.push.apply(matches, mutations[m].target.parentElement.querySelectorAll(msobserver.selector));
                     else
                         matches.push.apply(matches, mutations[m].target.querySelectorAll(msobserver.selector));
                 }
-                
+
                 // If this is an childList mutation, then inspect added nodes.
                 if (mutations[m].type == 'childList') {
                     // Search added nodes for matching selectors.
@@ -117,7 +117,7 @@
                             matches.push(mutations[m].addedNodes[n]);
 
                         // If the selector is fraternal, query siblings for matches.
-                        if (msobserver.isFraternal)
+                        if (msobserver.isFraternal && mutations[m].addedNodes[n].parentElement)
                             matches.push.apply(matches, mutations[m].addedNodes[n].parentElement.querySelectorAll(msobserver.selector));
                         else
                             matches.push.apply(matches, mutations[m].addedNodes[n].querySelectorAll(msobserver.selector));
