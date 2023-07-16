@@ -44,6 +44,9 @@ $(window).on('load', function() {
 			}, fir, true)
 			const $nrow = $frc.clone(true, true).removeAttr('data-files-row-clone')
 			$nrow.data(row).appendTo($frs)
+			if (row.name == '..') {
+				$nrow.addClass('msm-files-row--back')
+			}
 			fnRowName($nrow, row)
 			if (row.missing) {
 				$nrow.addClass('missing')
@@ -195,6 +198,8 @@ $(window).on('load', function() {
 	const fnSyncListClear = function () {
 		$('[data-files-row]').filter('.missing').remove()
 		$('[data-files-path]').removeAttr('readonly')
+		$('[data-files-row-rename--r1]').show()
+		$('[data-files-row-rename--ra]').hide()
 	}
 	const fnSyncList = function () {
 		console.log('fnSyncList')
@@ -257,6 +262,46 @@ $(window).on('load', function() {
 		$.each(numLists, function(num, list) {
 			fnSortDir(list)
 			fnCloneRow(numFiles[num], list, true)
+		})
+		fnSyncedRowsActions()
+	}
+	const fnSyncedRowsActions = function () {
+		if ($('[data-navbar-btn-sync]').data().active() == false) {
+			return this
+		}
+		const $files = $('[data-files]').filter(':visible')
+		const $files_a = $files.filter(':first')
+		const $files_bc = $files.not(':first')
+		$files_a.find('[data-files-row]').not('[data-files-row-clone]').each(function () {
+			const $row_a = $(this)
+			const data_a = $row_a.data()
+			if (data_a.name == '..') return this
+			const index_a = $files_a.find('[data-files-row]').not('[data-files-row-clone]').index($row_a)
+			const missings = [data_a.missing]
+			const rows = [$row_a]
+			$files_bc.each(function () {
+				$(this).find('[data-files-row]').not('[data-files-row-clone]').eq(index_a).each(function () {
+					const $row = $(this)
+					rows.push($row)
+					missings.push($row.data('missing'))
+				})
+			})
+			let noMissing = true
+			$.each(missings, function (i, value) {
+				noMissing = noMissing && ! value
+			})
+			if (noMissing) {
+				$.each(rows, function (i, $row) {
+					$row.find('[data-files-row-rename--r1]').hide()
+					$row.find('[data-files-row-rename--ra]').show()
+				})
+			} else {
+				$.each(rows, function (i, $row) {
+					$row.find('[data-files-row-rename--r1]').hide()
+					$row.find('[data-files-row-rename--ra]').hide()
+				})
+			}
+			// console.log(data_a.name, missings, noMissing, rows)
 		})
 	}
 	$('body').on('click', '[data-files-sync]', function () {
@@ -348,7 +393,7 @@ $(window).on('load', function() {
 			}
 		})
     })
-	$('body').on('click', '[data-files-row-action]', function () {
+	$('body').on('click', '[data-files-row-rename]', function () {
 		const $row = $(this).closest('[data-files-row]')
 		const $col = $row.closest('[data-files]')
 		const dataRow = $row.data()

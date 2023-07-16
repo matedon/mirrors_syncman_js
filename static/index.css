@@ -86,6 +86,9 @@ input[readonly]:focus {
 	width: 200px;
 	user-select: none;
 }
+.msm-files-row--back .msm-files-row-tools {
+	display: none;
+}
 .msm-files-row-tools > * {
 	float: right;
 }
