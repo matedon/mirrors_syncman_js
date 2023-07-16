@@ -84,6 +84,7 @@ input[readonly]:focus {
 	right: .5rem;
 	top: .25rem;
 	width: 200px;
+	user-select: none;
 }
 .msm-files-row-tools > * {
 	float: right;

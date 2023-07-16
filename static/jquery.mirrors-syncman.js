@@ -100,6 +100,7 @@ $(window).on('load', function() {
 	}
     fnReadCols()
     $('body').on('dblclick', '[data-files-row]', function () {
+		window.getSelection().removeAllRanges() // Deselect all text which were selected accidentally with dblclick.
         const $row = $(this)
         const dataRow = $row.data()
 		const fnRowAction = function ($r, p) {
