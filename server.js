@@ -11,7 +11,7 @@ app.use(express.json())
 app.use(express.urlencoded())
 let server = app.listen(8089)
 
-const strDiff = function (ai, bi, diffLast) {
+const strDiff = function (ai, bi) {
 	if (ai.length > bi.length) {
 		b = ai
 		a = bi
@@ -21,12 +21,12 @@ const strDiff = function (ai, bi, diffLast) {
 	}
 	let diff = Diff.diffWords(a, b)
 	let ret
-	if (diffLast == true) {
-		ret = diff[1].value
-	} else {
-		ret = diff[0].value
-	}
-	console.log('diff', diff, ret)
+	_.each(diff, function (item, key) {
+		if (item.added) {
+			ret = item.value
+		}
+	})
+	console.log('diff', a, b, diff, ret)
 	return ret
 }
 
@@ -158,7 +158,7 @@ app.post('/smb', function (req, res) {
 		password: req.body.password,
 		autoClose: true
 	})
-	let subdir = fnRemoveTrailingSlashes(strDiff(req.body.share, req.body.open, true))
+	let subdir = fnRemoveTrailingSlashes(strDiff(req.body.share, req.body.open))
 	smb2Client.readdir(subdir, { stats: true }, function (err, data) {
 		if (err) {
 			problem = 'Unable to scan network: ' + err
@@ -208,7 +208,7 @@ app.post('/rename-row', function (req, res) {
 			autoClose: true
 		})
 		// \\192.168.0.5\m\MIRROR_TEMP\E-BOOK (-) \\192.168.0.5\m (=) \MIRROR_TEMP\E-BOOK
-		let dir1 = strDiff(req.body.oldRow.path, req.body.col.share, true)
+		let dir1 = strDiff(req.body.oldRow.path, req.body.col.share)
 		// \MIRROR_TEMP\E-BOOK (=) MIRROR_TEMP\E-BOOK
 		dir1 = fnRemoveTrailingSlashes(dir1)
 		// MIRROR_TEMP\E-BOOK (-) E-BOOK (=) MIRROR_TEMP\
