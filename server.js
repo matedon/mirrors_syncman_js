@@ -4,24 +4,14 @@ const SMB2 = require('@marsaud/smb2')
 const fs = require('fs')
 const path = require('path')
 const _ = require('underscore')
+const Diff = require('diff')
 
 let app = express()
 app.use(express.json())
 app.use(express.urlencoded())
 let server = app.listen(8089)
 
-function reverseString(str) {
-    return str.split('').reverse().join('')
-}
-function strDiff(ai, bi, reverse) {
-	/**
-	 * The reverse argument should be true if expected difference present in the end of the strings!
-	 * Example: ai = "foobar", bi = "foobar-old"
-	 */
-	let i = 0
-	let j = 0
-	let res = ''
-	let a, b
+const strDiff = function (ai, bi, diffLast) {
 	if (ai.length > bi.length) {
 		b = ai
 		a = bi
@@ -29,22 +19,15 @@ function strDiff(ai, bi, reverse) {
 		a = ai
 		b = bi
 	}
-	if (reverse == true) {
-		a = reverseString(a)
-		b = reverseString(b)
+	let diff = Diff.diffWords(a, b)
+	let ret
+	if (diffLast == true) {
+		ret = diff[1].value
+	} else {
+		ret = diff[0].value
 	}
-	while (j < b.length) {
-		if (a[i] != b[j] || i == a.length) {
-			res += b[j]
-		} else {
-			i++
-		}
-		j++
-	}
-	if (reverse == true) {
-		res = reverseString(res)
-	}
-	return res
+	console.log('diff', diff, ret)
+	return ret
 }
 
 app.get('/', function(req, res) {
@@ -203,7 +186,7 @@ app.post('/smb', function (req, res) {
 app.post('/rename-row', function (req, res) {
 	let problem = false
 	if (req.body.col.type == 'files') {
-		const dir = strDiff(req.body.oldRow.path, req.body.oldRow.name, true)
+		const dir = strDiff(req.body.oldRow.path, req.body.oldRow.name)
 		const newPath = dir + req.body.newRow.name
 		console.log(dir, req.body.newRow.name, newPath)
 		const newRow = _.extend({}, req.body.oldRow, {
@@ -224,13 +207,13 @@ app.post('/rename-row', function (req, res) {
 			password: req.body.col.password,
 			autoClose: true
 		})
-		// \\192.168.0.30\m\!- A_TUDASTAR_TEMP\E-BOOK (-) \\192.168.0.30\m (=) \!- A_TUDASTAR_TEMP\E-BOOK
+		// \\192.168.0.5\m\MIRROR_TEMP\E-BOOK (-) \\192.168.0.5\m (=) \MIRROR_TEMP\E-BOOK
 		let dir1 = strDiff(req.body.oldRow.path, req.body.col.share, true)
-		// \!- A_TUDASTAR_TEMP\E-BOOK (=) !- A_TUDASTAR_TEMP\E-BOOK
+		// \MIRROR_TEMP\E-BOOK (=) MIRROR_TEMP\E-BOOK
 		dir1 = fnRemoveTrailingSlashes(dir1)
-		// !- A_TUDASTAR_TEMP\E-BOOK (-) E-BOOK (=) !- A_TUDASTAR_TEMP\
-		let dir2 = strDiff(dir1, req.body.oldRow.name, true)
-		// !- A_TUDASTAR_TEMP\ (+) E-BOOK Archive (=) !- A_TUDASTAR_TEMP\E-BOOK Archive
+		// MIRROR_TEMP\E-BOOK (-) E-BOOK (=) MIRROR_TEMP\
+		let dir2 = strDiff(dir1, req.body.oldRow.name)
+		// MIRROR_TEMP\ (+) E-BOOK Archive (=) MIRROR_TEMP\E-BOOK Archive
 		let dir3 = dir2 + req.body.newRow.name
 		console.log('rename', dir1, dir2, dir3)
 		smb2Client.rename(dir1, dir3, { replace: true }, function (err) {
