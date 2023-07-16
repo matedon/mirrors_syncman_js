@@ -10,10 +10,18 @@ app.use(express.json())
 app.use(express.urlencoded())
 let server = app.listen(8089)
 
-function strDiff(a, b) {
+function strDiff(ai, bi) {
 	let i = 0
 	let j = 0
 	let res = ''
+	let a, b
+	if (ai.length > bi.length) {
+		b = ai
+		a = bi
+	} else {
+		a = ai
+		b = bi
+	}
 	while (j < b.length) {
 		if (a[i] != b[j] || i == a.length) {
 			res += b[j]
@@ -176,8 +184,20 @@ app.post('/smb', function (req, res) {
 	})
 })
 app.post('/rename-row', function (req, res) {
-	// TODO: rename files/smb
-	res.send({
-		'row': req.body.newRow
-	})
+	if (req.body.col.type == 'files') {
+		const dir = strDiff(req.body.oldRow.path, req.body.oldRow.name)
+		const newPath = dir + req.body.newRow.name
+		console.log(dir, req.body.newRow.name, newPath)
+		const newRow = _.extend({}, req.body.oldRow, {
+			'name': req.body.newRow.name,
+			'path': newPath
+		})
+		fs.rename(req.body.oldRow.path, newPath, function () {
+			res.send({
+				'row': newRow
+			})
+		})
+	} else if (req.body.col.type == 'smb') {
+		// TODO: rename smb
+	}
 })

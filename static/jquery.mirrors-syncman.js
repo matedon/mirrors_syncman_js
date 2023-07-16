@@ -319,7 +319,6 @@ $(window).on('load', function() {
 		$modRen.find('[name="name"]').val(dataRow.name)
 		$modRen.off('click', '[data-mbtn-rename-save]')
 		$modRen.on('click', '[data-mbtn-rename-save]', function () {
-			const newRow = $.extend({}, dataRow, $modRen.serializeJSON())
 			$.ajax({
 				'url': 'http://localhost:8089/rename-row',
 				'type': 'POST',
@@ -327,12 +326,12 @@ $(window).on('load', function() {
 				'data': {
 					'col' : dataCol,
 					'oldRow': dataRow,
-					'newRow': newRow
+					'newRow': $modRen.serializeJSON()
 				},
 				'success': function (res) {
 					console.log(res)
-					$row.data(newRow)
-					fnRowName($row, newRow)
+					$row.data(res.row)
+					fnRowName($row, res.row)
 					bsModRen.hide()
 				}
 			})
