@@ -5,9 +5,11 @@
 .msm-files-row {
     cursor: pointer;
 }
-.msm-files-row:hover td,
+.msm-files-row:hover td {
+	background-color: #e8e8e8;
+}
 .msm-files-row--hover td {
-    background-color: #bada55;
+    background-color: #bada55 !important;
 }
 .msm-files-row.missing td {
 	color: red;
