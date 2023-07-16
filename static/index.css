@@ -7,6 +7,9 @@ input[readonly]:focus {
 	color: #999;
 	background-color: #f8f8f8;
 }
+.form-floating label::after {
+	background-color: transparent !important;
+}
 .msm-files-row {
     cursor: pointer;
 }
