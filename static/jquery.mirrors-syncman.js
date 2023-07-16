@@ -326,7 +326,8 @@ $(window).on('load', function() {
 				'dataType': 'json',
 				'data': {
 					'col' : dataCol,
-					'row': newRow
+					'oldRow': dataRow,
+					'newRow': newRow
 				},
 				'success': function (res) {
 					console.log(res)
