@@ -403,37 +403,55 @@ $(window).on('load', function() {
 		const $btn = $(this)
 		const isR1 = $btn.is('[data-files-row-rename--r1]')
 		const isRa = $btn.is('[data-files-row-rename--ra]')
-		const $row = $btn.closest('[data-files-row]')
-		const $col = $row.closest('[data-files]')
-		const dataRow = $row.data()
-		const dataCol = $col.data()
+		let $rows = $()
 		if (isR1) {
 			$modRen.find('[data-msm-modal-title--r1]').show()
 			$modRen.find('[data-msm-modal-title--ra]').hide()
+			$rows = $btn.closest('[data-files-row]')
 		}
 		if (isRa) {
 			$modRen.find('[data-msm-modal-title--r1]').hide()
 			$modRen.find('[data-msm-modal-title--ra]').show()
+			$rows = $('[data-files-row]').filter(function () {
+				const $row = $(this)
+				const dataRow = $row.data()
+				if (dataRow.hover !== true) return false
+				if (dataRow.missing == true) return false
+				return this
+			})
 		}
 		bsModRen.show()
-		$modRen.find('[name="name"]').val(dataRow.name)
+		$modRen.find('[name="name"]').val($btn.closest('[data-files-row]').data('name'))
 		$modRen.off('click', '[data-mbtn-rename-save]')
 		$modRen.on('click', '[data-mbtn-rename-save]', function () {
-			$.ajax({
-				'url': 'http://localhost:8089/rename-row',
-				'type': 'POST',
-				'dataType': 'json',
-				'data': {
-					'col' : dataCol,
-					'oldRow': dataRow,
-					'newRow': $modRen.serializeJSON()
-				},
-				'success': function (res) {
-					console.log(res)
-					$row.data(res.row)
-					fnRowName($row, res.row)
-					bsModRen.hide()
-				}
+			let successCount = 0
+			const fnSuccessAll = function () {
+				bsModRen.hide()
+			}
+			$rows.each(function () {
+				const $row = $(this)
+				const $col = $row.closest('[data-files]')
+				const dataRow = $row.data()
+				const dataCol = $col.data()
+				$.ajax({
+					'url': 'http://localhost:8089/rename-row',
+					'type': 'POST',
+					'dataType': 'json',
+					'data': {
+						'col' : dataCol,
+						'oldRow': dataRow,
+						'newRow': $modRen.serializeJSON()
+					},
+					'success': function (res) {
+						console.log(res)
+						$row.data(res.row)
+						fnRowName($row, res.row)
+						successCount ++
+						if (successCount == $rows.length) {
+							fnSuccessAll()
+						}
+					}
+				})
 			})
 		})
     })
