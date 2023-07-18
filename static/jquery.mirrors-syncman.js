@@ -347,8 +347,6 @@ $(window).on('load', function() {
     })
 	const $modCe = $('[data-msm-modal-ce]')
 	const bsModCe = new bootstrap.Modal($modCe)
-	const $modRen = $('[data-msm-modal-rename]')
-	const bsModRen = new bootstrap.Modal($modRen)
 	$('body').on('click', '[data-files-ce-open]', function () {
 		const $files = $(this).closest('[data-files]')
         const dataCol = $files.data()
@@ -399,11 +397,24 @@ $(window).on('load', function() {
 			}
 		})
     })
+	const $modRen = $('[data-msm-modal-rename]')
+	const bsModRen = new bootstrap.Modal($modRen)
 	$('body').on('click', '[data-files-row-rename]', function () {
-		const $row = $(this).closest('[data-files-row]')
+		const $btn = $(this)
+		const isR1 = $btn.is('[data-files-row-rename--r1]')
+		const isRa = $btn.is('[data-files-row-rename--ra]')
+		const $row = $btn.closest('[data-files-row]')
 		const $col = $row.closest('[data-files]')
 		const dataRow = $row.data()
 		const dataCol = $col.data()
+		if (isR1) {
+			$modRen.find('[data-msm-modal-title--r1]').show()
+			$modRen.find('[data-msm-modal-title--ra]').hide()
+		}
+		if (isRa) {
+			$modRen.find('[data-msm-modal-title--r1]').hide()
+			$modRen.find('[data-msm-modal-title--ra]').show()
+		}
 		bsModRen.show()
 		$modRen.find('[name="name"]').val(dataRow.name)
 		$modRen.off('click', '[data-mbtn-rename-save]')
