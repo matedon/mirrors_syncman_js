@@ -267,7 +267,12 @@ $(window).on('load', function() {
 		if ($('[data-navbar-btn-sync]').data().active() == false) {
 			return this
 		}
-		const $files = $('[data-files]').filter(':visible')
+		const $files = $('[data-files]').filter(function () {
+			const $file = $(this)
+			if ($file.is(':visible') == false) return false
+			if ($file.find('[data-files-sync]').data().active() == false) return false
+			return true
+		})
 		const $files_a = $files.filter(':first')
 		const $files_bc = $files.not(':first')
 		$files_a.find('[data-files-row-c]').each(function () {
