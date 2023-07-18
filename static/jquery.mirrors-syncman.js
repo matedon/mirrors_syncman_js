@@ -135,8 +135,11 @@ $(window).on('load', function() {
 			return this
 		}
         const $fr = $(this)
-        const dfr = $fr.data()
 		const $ff = $fr.closest('[data-files]')
+		if ($ff.find('[data-files-sync]').data().active() == false) {
+			return this
+		}
+		const dfr = $fr.data()
 		const index = $ff.find('[data-files-row]').index($fr)
 		$('[data-files]').each(function () {
 			const $files = $(this)
