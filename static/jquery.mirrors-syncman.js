@@ -33,16 +33,14 @@ $(window).on('load', function() {
 		const $frc = $fls.find('[data-files-row-clone]')
 		const $frs = $fls.find('[data-files-rows]')
 		if (doClear) {
-			$fls.find('[data-files-row]').filter(function () {
-				return $(this).is('[data-files-row-clone]') ? false : true
-			}).remove()
+			$fls.find('[data-files-row-c]').remove()
 		}
 		$.each(files, function (i, fir) {
 			const row = $.extend({
 				'missing': false,
 				'present': []
 			}, fir, true)
-			const $nrow = $frc.clone(true, true).removeAttr('data-files-row-clone')
+			const $nrow = $frc.clone(true, true).removeAttr('data-files-row-clone').attr('data-files-row-c', true)
 			$nrow.data(row).appendTo($frs)
 			if (row.name == '..') {
 				$nrow.addClass('msm-files-row--back')
@@ -214,7 +212,7 @@ $(window).on('load', function() {
 			if (dataCol.num == undefined) return this
 			numFiles[dataCol.num] = $col
 			numLists[dataCol.num] = []
-			$col.find('[data-files-row]').not('[data-files-row-clone]').each(function () {
+			$col.find('[data-files-row-c]').each(function () {
 				numLists[dataCol.num].push($(this).data())
 			})
 			$col.find('[data-files-path]').attr('readonly', true)
@@ -272,15 +270,15 @@ $(window).on('load', function() {
 		const $files = $('[data-files]').filter(':visible')
 		const $files_a = $files.filter(':first')
 		const $files_bc = $files.not(':first')
-		$files_a.find('[data-files-row]').not('[data-files-row-clone]').each(function () {
+		$files_a.find('[data-files-row-c]').each(function () {
 			const $row_a = $(this)
 			const data_a = $row_a.data()
 			if (data_a.name == '..') return this
-			const index_a = $files_a.find('[data-files-row]').not('[data-files-row-clone]').index($row_a)
+			const index_a = $files_a.find('[data-files-row-c]').index($row_a)
 			const missings = [data_a.missing]
 			const rows = [$row_a]
 			$files_bc.each(function () {
-				$(this).find('[data-files-row]').not('[data-files-row-clone]').eq(index_a).each(function () {
+				$(this).find('[data-files-row-c]').eq(index_a).each(function () {
 					const $row = $(this)
 					rows.push($row)
 					missings.push($row.data('missing'))
