@@ -154,6 +154,24 @@ $(window).on('load', function() {
 	$('body').on('mouseleave', '[data-files-row]', function () {
 		$('[data-files-row]').data('hover', false).removeClass('msm-files-row--hover')
     })
+	const fnFilesProblem = function ($item, problem, fnYes, fnNo) {
+		const $files = $item.closest('[data-files]')
+		const dataFiles = $files.data()
+		if (problem) {
+			dataFiles.problem = problem
+			const $als = $files.find('[data-files-alerts]')
+			const $alc = $als.find('[data-files-alert-clone]')
+			const $alr = $alc.clone(true, true).removeAttr('data-files-alert-clone')
+			$alr.appendTo($als).find('[data-files-alert-text]').text(problem)
+			if (typeof fnNo == 'function') {
+				fnNo()
+			}
+		} else {
+			if (typeof fnYes == 'function') {
+				fnYes()
+			}
+		}
+	}
 	let syncTime
     $('body').on('input', '[data-files-path]', function () {
         const $path = $(this)
@@ -176,22 +194,16 @@ $(window).on('load', function() {
 					'open': $path.val()
 				}, true),
                 'success': function (res) {
-                    console.log(res)
-					if (res.problem) {
-						dataCol.problem = res.problem
-						const $als = $files.find('[data-files-alerts]')
-						const $alc = $als.find('[data-files-alert-clone]')
-						const $alr = $alc.clone(true, true).removeAttr('data-files-alert-clone')
-						$alr.appendTo($als).find('[data-files-alert-text]').text(res.problem)
-						return false
-					}
-					fnCloneRow($path.closest('[data-files]'), fnSortDir(res.files), true)
-					if ($('[data-navbar-btn-sync]').data().active()) {
-						if (syncTime) clearTimeout(syncTime)
-						syncTime = setTimeout(function () {
-							fnSyncList()
-						}, 300)
-					}
+					console.log(res)
+					fnFilesProblem($files, res.problem, function () {
+						fnCloneRow($path.closest('[data-files]'), fnSortDir(res.files), true)
+						if ($('[data-navbar-btn-sync]').data().active()) {
+							if (syncTime) clearTimeout(syncTime)
+							syncTime = setTimeout(function () {
+								fnSyncList()
+							}, 300)
+						}
+					})
                 }
             })
         }, 500)
