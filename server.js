@@ -193,7 +193,23 @@ app.post('/rename-row', function (req, res) {
 			'name': req.body.newRow.name,
 			'path': newPath
 		})
-		fs.rename(req.body.oldRow.path, newPath, function () {
+		fs.access(req.body.oldRow.path, fs.constants.W_OK, function (err) {
+			if (err) {
+				problem = req.body.oldRow.path + ' path is not writeable!'
+				console.log(problem)
+			} else {
+				try {
+					fs.rename(req.body.oldRow.path, newPath, function () {
+						res.send({
+							'row': newRow,
+							'problem': problem
+						})
+					})
+					return this
+				} catch (err) {
+					problem = err
+				}
+			}
 			res.send({
 				'row': newRow,
 				'problem': problem
