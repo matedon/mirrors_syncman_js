@@ -456,8 +456,10 @@ $(window).on('load', function() {
 					},
 					'success': function (res) {
 						console.log(res)
-						$row.data(res.row)
-						fnRowName($row, res.row)
+						fnFilesProblem($row, res.problem, function () {
+							$row.data(res.row)
+							fnRowName($row, res.row)
+						})
 						successCount ++
 						if (successCount == $rows.length) {
 							fnSuccessAll()
