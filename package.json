@@ -21,7 +21,6 @@
 	},
 	"dependencies": {
 		"@marsaud/smb2": "^0.18.0",
-		"body-parser": "^1.20.2",
 		"crypto": "^1.0.1",
 		"diff": "^5.1.0",
 		"electron-context-menu": "^3.4.0",

@@ -64,15 +64,28 @@ $(window).on('load', function() {
 	}
 	const fnReadCols = function (colNums) {
 		if (typeof colNums !== 'array') {
-			colNums = [colNums]
+			if (colNums !== undefined) {
+				colNums = [colNums]
+			} else {
+				colNums = []
+			}
 		}
+		/**
+		 * jQuery ajax 'type': 'json' is not enough!
+		 * The 'data' object values are not converted and transmitted properly!
+		 * For example boolean true value become 'true' string.
+		 * To fix, need to specify 'headers' and use JSON.stringify in 'data'!
+		 * Source: https://stackoverflow.com/a/47651410/1516015
+		 */
 		$.ajax({
 			'url': 'http://localhost:8089/read-cols',
 			'type': 'POST',
-			'dataType': 'json',
-			'data': {
-				colNums: colNums
+			'headers': {
+				'Content-Type': 'application/json'
 			},
+			'data': JSON.stringify({
+				colNums: colNums
+			}),
 			'success': function (res) {
 				console.log(res)
 				$.each(res.cols, function (i, data) {
@@ -189,10 +202,12 @@ $(window).on('load', function() {
             dataPath.$filesPathReq = $.ajax({
                 'url': 'http://localhost:8089/' + dataCol.type,
 				'type': 'POST',
-                'dataType': 'json',
-                'data': $.extend({}, dataCol, {
+                'headers': {
+					'Content-Type': 'application/json'
+				},
+				'data': JSON.stringify($.extend({}, dataCol, {
 					'open': $path.val()
-				}, true),
+				}, true)),
                 'success': function (res) {
 					console.log(res)
 					fnFilesProblem($files, res.problem, function () {
@@ -380,10 +395,12 @@ $(window).on('load', function() {
 			$.ajax({
 				'url': 'http://localhost:8089/del-col',
 				'type': 'POST',
-				'dataType': 'json',
-				'data': {
-					'col' : dataCol
+				'headers': {
+					'Content-Type': 'application/json'
 				},
+				'data': JSON.stringify({
+					'col' : dataCol
+				}),
 				'success': function (res) {
 					console.log(res)
 					fnDelCol(dataCol.num)
@@ -398,10 +415,12 @@ $(window).on('load', function() {
 		$.ajax({
 			'url': 'http://localhost:8089/save-col',
 			'type': 'POST',
-			'dataType': 'json',
-			'data': {
-				'col' : dataCol
+			'headers': {
+				'Content-Type': 'application/json'
 			},
+			'data': JSON.stringify({
+				'col' : dataCol
+			}),
 			'success': function (res) {
 				console.log(res)
 				fnReadCols(dataCol.num * 1)
@@ -448,16 +467,18 @@ $(window).on('load', function() {
 				$.ajax({
 					'url': 'http://localhost:8089/rename-row',
 					'type': 'POST',
-					'dataType': 'json',
-					'data': {
+					'headers': {
+						'Content-Type': 'application/json'
+					},
+					'data': JSON.stringify({
 						'col' : dataCol,
 						'oldRow': dataRow,
 						'newRow': $modRen.serializeJSON()
-					},
+					}),
 					'success': function (res) {
 						console.log(res)
 						fnFilesProblem($row, res.problem, function () {
-							$row.data(res.row)
+							$.extend(dataRow, res.row)
 							fnRowName($row, res.row)
 						})
 						successCount ++

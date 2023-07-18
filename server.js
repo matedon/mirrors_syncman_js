@@ -8,7 +8,7 @@ const Diff = require('diff')
 
 let app = express()
 app.use(express.json())
-app.use(express.urlencoded())
+app.use(express.urlencoded({ extended: true }))
 let server = app.listen(8089)
 
 const strDiff = function (ai, bi) {
