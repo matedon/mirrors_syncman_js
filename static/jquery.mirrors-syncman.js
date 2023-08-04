@@ -134,11 +134,9 @@ $(window).on('load', function() {
 				}
 				return this
 			})
-			if ($rows.length == $('[data-files]').filter(':visible').length) {
-				$rows.each(function () {
-					fnRowAction($(this), $(this).data().path)
-				})
-			}
+			$rows.each(function () {
+				fnRowAction($(this), $(this).data().path)
+			})
 		} else {
 			fnRowAction($row, dataRow.path)
 		}
